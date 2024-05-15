@@ -23,7 +23,9 @@ jobs:
         token: ${{ SECRETS.GITHUB_TOKEN }}
 
     - name: Build TS project
-      run: rbxtsc
+      run: |
+        npm install
+        npm run build
 
     - name: Build Roblox project
       run: rojo build -o game.rbxl
