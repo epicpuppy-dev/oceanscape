@@ -13,12 +13,20 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v3
 
+    - name: Setup Node.js
+      uses: actions/setup-node@v4.0.2
+
     - name: Install Foreman
       uses: Roblox/setup-foreman@v1
       with:
         version: "^1.0.0"
         token: ${{ SECRETS.GITHUB_TOKEN }}
 
-    - run: rojo build -o game.rbxl
+    - name: Build TS project
+      run: rbxtsc
 
-    - run: rbxcloud experience publish --filename oceanscape.rbxl --place-id 17497948863 --universe-id 5988965500 --version-type published --api-key "${{ SECRETS.API_KEY }}"
+    - name: Build Roblox project
+      run: rojo build -o game.rbxl
+
+    - name: Deploy to Roblox
+      run: rbxcloud experience publish --filename oceanscape.rbxl --place-id 17497948863 --universe-id 5988965500 --version-type published --api-key "${{ SECRETS.API_KEY }}"
