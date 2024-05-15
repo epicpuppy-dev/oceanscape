@@ -1,0 +1,36 @@
+name: Deploy to Production
+
+on:
+  push:
+    branches:
+    - master
+    tags:
+    - '*'
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4.0.2
+
+    - name: Install Foreman
+      uses: Roblox/setup-foreman@v1
+      with:
+        version: "^1.0.0"
+        token: ${{ SECRETS.GITHUB_TOKEN }}
+
+    - name: Build TS project
+      run: |
+        npm install
+        npm run build
+
+    - name: Build Roblox project
+      run: rojo build -o oceanscape.rbxl
+
+    - name: Deploy to Roblox
+      run: rbxcloud experience publish --filename oceanscape.rbxl --place-id 17498124279 --universe-id 5989033440 --version-type published --api-key "${{ SECRETS.API_KEY_PROD }}"
