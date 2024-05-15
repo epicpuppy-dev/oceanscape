@@ -1,5 +1,5 @@
 {
-	"name": "roblox-ts-game",
+	"name": "oceanscape",
 	"globIgnorePaths": [
 		"**/package.json",
 		"**/tsconfig.json"
