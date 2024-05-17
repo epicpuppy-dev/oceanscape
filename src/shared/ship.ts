@@ -61,9 +61,16 @@ export class Ship {
             this.speed +
             this.acceleration *
                 this.targetPower *
-                ((this.maxSpeed * this.targetPower - this.speed) / this.maxSpeed) *
+                math.abs((this.maxSpeed * this.targetPower - this.speed) / this.maxSpeed) *
                 dt;
-        this.speed = math.clamp(math.round(this.speed * 100) / 100, 0, this.maxSpeed);
+        if (this.speed > 0 && this.speed > this.maxSpeed * this.targetPower)
+            this.speed -= 0.1 * (this.speed - this.maxSpeed * this.targetPower) * dt;
+        else if (this.speed < 0 && this.speed < this.maxSpeed * this.targetPower)
+            this.speed -= 0.1 * (this.speed - this.maxSpeed * this.targetPower) * dt;
+        if (math.abs(this.rudder) > 0.1) {
+            this.speed -= 0.1 * this.speed * math.abs(this.rudder) * dt;
+        }
+        this.speed = math.clamp(math.round(this.speed * 10000) / 10000, -0.5 * this.maxSpeed, this.maxSpeed);
         // Calculate distance moved
         const distance = this.speed * 0.503 * dt;
         // Update heading

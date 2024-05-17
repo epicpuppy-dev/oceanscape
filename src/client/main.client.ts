@@ -1,4 +1,5 @@
 import { Players, ReplicatedStorage, RunService, UserInputService } from "@rbxts/services";
+import { ShipUI } from "shared/ship.ui";
 
 const player = Players.LocalPlayer;
 
@@ -20,6 +21,8 @@ let shipId = -1;
 let targetPower = 0;
 let targetTurn = 0;
 
+let gui: ShipUI | undefined = undefined;
+
 player.CharacterAdded.Connect((character) => {
     //Disable player animations
     character.WaitForChild("Animate").Destroy();
@@ -34,6 +37,14 @@ player.CharacterAdded.Connect((character) => {
         character.GetAttributeChangedSignal("id").Wait();
         shipId = character.GetAttribute("id") as number;
     }
+    character.SetAttribute("speed", 0);
+    character.SetAttribute("heading", 0);
+    character.SetAttribute("rudder", 0);
+    character.SetAttribute("targetPower", targetPower);
+    character.SetAttribute("targetTurn", targetTurn);
+    character.SetAttribute("rudderMax", 0.9);
+    gui = new ShipUI(player);
+    gui.gui.Enabled = true;
 });
 
 const UIS = UserInputService;
@@ -43,11 +54,13 @@ UIS.InputBegan.Connect((input, chatting) => {
     if (shipId === -1) return;
     let update = false;
     if (input.KeyCode === controls.forward) {
-        targetPower = math.min(targetPower + 0.25, 1);
+        if (targetPower < 0) targetPower = 0;
+        else targetPower = math.min(targetPower + 0.25, 1);
         update = true;
     }
     if (input.KeyCode === controls.backward) {
-        targetPower = math.max(targetPower - 0.25, -0.25);
+        if (targetPower === 0) targetPower = -0.5;
+        else targetPower = math.max(targetPower - 0.25, -0.5);
         update = true;
     }
     if (input.KeyCode === controls.left) {
@@ -60,6 +73,8 @@ UIS.InputBegan.Connect((input, chatting) => {
     }
     if (!update) return;
     (ReplicatedStorage.WaitForChild("MovementUpdateEvent") as RemoteEvent).FireServer(shipId, targetPower, targetTurn);
+    player.Character!.SetAttribute("targetPower", targetPower);
+    player.Character!.SetAttribute("targetTurn", targetTurn);
 });
 
 UIS.InputEnded.Connect((input, chatting) => {
@@ -73,4 +88,6 @@ UIS.InputEnded.Connect((input, chatting) => {
     }
     if (!update) return;
     (ReplicatedStorage.WaitForChild("MovementUpdateEvent") as RemoteEvent).FireServer(shipId, targetPower, targetTurn);
+    player.Character!.SetAttribute("targetPower", targetPower);
+    player.Character!.SetAttribute("targetTurn", targetTurn);
 });
