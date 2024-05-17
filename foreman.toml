@@ -1,3 +1,5 @@
 [tools]
 rojo = { github = "rojo-rbx/rojo", version = "7.4.1" }
 rbxcloud = { github = "sleitnick/rbxcloud", version = "0.10.0" }
+lune = { github = "lune-org/lune", version="0.8.4" }
+tarmac = { source = "rojo-rbx/tarmac", version = "0.7.5" }
