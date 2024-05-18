@@ -2,5 +2,6 @@
 /out
 /include
 *.tsbuildinfo
-*.rbx*
+*.rbxl*
 key.txt
+build.bat

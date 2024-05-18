@@ -23,6 +23,12 @@
 					}
 				}
 			},
+			"MovementUpdateEvent": {
+				"$className": "RemoteEvent"
+			},
+			"Roact": {
+				"$path": "assets/lib/Roact.rbxm"
+			},
 			"TS": {
 				"$path": "out/shared"
 			}
@@ -34,12 +40,18 @@
 				"TS": {
 					"$path": "out/client"
 				}
+			},
+			"StarterCharacter": {
+				"$path": "assets/models/StarterShip.rbxm"
 			}
 		},
 		"Workspace": {
 			"$className": "Workspace",
 			"$properties": {
 				"FilteringEnabled": true
+			},
+			"Terrain": {
+				"$path": "assets/Terrain.rbxm"
 			}
 		},
 		"HttpService": {
@@ -52,6 +64,15 @@
 			"$className": "SoundService",
 			"$properties": {
 				"RespectFilteringEnabled": true
+			}
+		},
+		"Lighting": {
+			"$className": "Lighting",
+			"$properties": {
+				"Technology": "Future",
+				"FogStart": 200,
+				"FogEnd": 1000,
+				"ClockTime": 16
 			}
 		}
 	}
