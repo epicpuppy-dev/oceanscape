@@ -13,7 +13,7 @@ function onPlayerAdded(player: Player) {
             character,
             character.PrimaryPart!.CFrame.LookVector.Y,
             25,
-            0.9,
+            1,
             3,
             0.3,
             character.PrimaryPart!.Position.X,

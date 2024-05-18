@@ -1,5 +1,8 @@
 import { ReplicatedStorage } from "@rbxts/services";
 
+const DRAG = 0.1;
+const TURN_DRAG = 0.075;
+
 export class Ship {
     id: number;
     speed: number = 0; //kts = 0.503 studs/s
@@ -64,11 +67,11 @@ export class Ship {
                 math.abs((this.maxSpeed * this.targetPower - this.speed) / this.maxSpeed) *
                 dt;
         if (this.speed > 0 && this.speed > this.maxSpeed * this.targetPower)
-            this.speed -= 0.1 * (this.speed - this.maxSpeed * this.targetPower) * dt;
+            this.speed -= DRAG * (this.speed - this.maxSpeed * this.targetPower) * dt;
         else if (this.speed < 0 && this.speed < this.maxSpeed * this.targetPower)
-            this.speed -= 0.1 * (this.speed - this.maxSpeed * this.targetPower) * dt;
+            this.speed -= DRAG * (this.speed - this.maxSpeed * this.targetPower) * dt;
         if (math.abs(this.rudder) > 0.1) {
-            this.speed -= 0.1 * this.speed * math.abs(this.rudder) * dt;
+            this.speed -= TURN_DRAG * this.speed * (math.abs(this.rudder) / this.maxRudder) * dt;
         }
         this.speed = math.clamp(math.round(this.speed * 10000) / 10000, -0.5 * this.maxSpeed, this.maxSpeed);
         // Calculate distance moved

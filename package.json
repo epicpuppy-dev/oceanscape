@@ -25,6 +25,7 @@
     "typescript": "^5.4.5"
   },
   "dependencies": {
+    "@rbxts/roact": "^1.4.4-ts.0",
     "@rbxts/services": "^1.5.4"
   }
 }

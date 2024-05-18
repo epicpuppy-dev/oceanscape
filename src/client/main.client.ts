@@ -1,5 +1,6 @@
 import { Players, ReplicatedStorage, RunService, UserInputService } from "@rbxts/services";
-import { ShipUI } from "shared/ship.ui";
+import Roact from "@rbxts/roact";
+import { SpeedDisplay, HeadingDisplay, TurnBar } from "shared/ship.hud";
 
 const player = Players.LocalPlayer;
 
@@ -21,7 +22,37 @@ let shipId = -1;
 let targetPower = 0;
 let targetTurn = 0;
 
-let gui: ShipUI | undefined = undefined;
+const hud = {
+    speed: Roact.createElement(SpeedDisplay, { speed: 0, targetPower: 0 }),
+    heading: Roact.createElement(HeadingDisplay, { heading: 0 }),
+    turn: Roact.createElement(TurnBar, { rudder: 0, maxRudder: 1 }),
+};
+const ui = Roact.createElement("ScreenGui", {}, hud);
+let gui: Roact.Tree;
+
+function UpdateUI() {
+    if (gui === undefined) return;
+    hud.speed = Roact.createElement(
+        SpeedDisplay,
+        {
+            speed: player.Character!.GetAttribute("speed") as number,
+            targetPower: player.Character!.GetAttribute("targetPower") as number,
+        },
+        [],
+    );
+    hud.heading = Roact.createElement(
+        HeadingDisplay,
+        {
+            heading: player.Character!.GetAttribute("heading") as number,
+        },
+        [],
+    );
+    hud.turn = Roact.createElement(TurnBar, {
+        rudder: player.Character!.GetAttribute("rudder") as number,
+        maxRudder: player.Character!.GetAttribute("maxRudder") as number,
+    });
+    gui = Roact.update(gui, Roact.createElement("ScreenGui", {}, hud));
+}
 
 player.CharacterAdded.Connect((character) => {
     //Disable player animations
@@ -42,9 +73,10 @@ player.CharacterAdded.Connect((character) => {
     character.SetAttribute("rudder", 0);
     character.SetAttribute("targetPower", targetPower);
     character.SetAttribute("targetTurn", targetTurn);
-    character.SetAttribute("rudderMax", 0.9);
-    gui = new ShipUI(player);
-    gui.gui.Enabled = true;
+    character.SetAttribute("maxRudder", 1);
+
+    //Enable GUI
+    gui = Roact.mount(ui, player.WaitForChild("PlayerGui"));
 });
 
 const UIS = UserInputService;
@@ -91,3 +123,5 @@ UIS.InputEnded.Connect((input, chatting) => {
     player.Character!.SetAttribute("targetPower", targetPower);
     player.Character!.SetAttribute("targetTurn", targetTurn);
 });
+
+RunService.Heartbeat.Connect(UpdateUI);

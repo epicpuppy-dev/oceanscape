@@ -26,6 +26,9 @@
 			"MovementUpdateEvent": {
 				"$className": "RemoteEvent"
 			},
+			"Roact": {
+				"$path": "assets/lib/Roact.rbxm"
+			},
 			"TS": {
 				"$path": "out/shared"
 			}
