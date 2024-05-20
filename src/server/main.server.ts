@@ -6,12 +6,12 @@ let id = 0;
 
 function onPlayerRemoved(player: Player) {
     const character = player.Character;
-    if (character !== undefined) onCharacterRemoved(character);
+    if (character !== undefined) onCharacterDied(character);
 }
 
-function onCharacterRemoved(character: Model) {
+function onCharacterDied(character: Model) {
     const ship = ships.find((ship) => ship.model === character);
-    character.WaitForChild("HumaniodRootPart").WaitForChild("Attachment").Destroy();
+    character.WaitForChild("HumanoidRootPart").WaitForChild("Attachment").Destroy();
     if (ship !== undefined) destroyShip(ship.id);
 }
 
@@ -23,8 +23,8 @@ function onPlayerAdded(player: Player) {
         //Initialize ship class
         const ship = new Ship(++id, character, character.PrimaryPart!.CFrame.LookVector.Y, 25, 1, 2, 0.3);
         ships.push(ship);
+        (player.Character!.WaitForChild("Humanoid") as Humanoid).Died.Connect(() => onCharacterDied(player.Character!));
     });
-    player.CharacterRemoving.Connect(onCharacterRemoved);
 }
 
 Players.PlayerAdded.Connect(onPlayerAdded);

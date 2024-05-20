@@ -75,11 +75,12 @@ player.CharacterAdded.Connect((character) => {
 
     //Enable GUI
     gui = Roact.mount(ui, player.WaitForChild("PlayerGui"));
-});
-player.CharacterRemoving.Connect(() => {
-    hasShip = false;
-    shipId = -1;
-    Roact.unmount(gui);
+
+    (player.Character!.WaitForChild("Humanoid") as Humanoid).Died.Connect(() => {
+        hasShip = false;
+        shipId = -1;
+        Roact.unmount(gui);
+    });
 });
 
 const UIS = UserInputService;
