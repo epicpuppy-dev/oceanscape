@@ -70,8 +70,8 @@
 			"$className": "Lighting",
 			"$properties": {
 				"Technology": "Future",
-				"FogStart": 200,
-				"FogEnd": 1000,
+				"FogStart": 1000,
+				"FogEnd": 4000,
 				"ClockTime": 16
 			}
 		}

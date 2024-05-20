@@ -31,6 +31,8 @@ const ui = Roact.createElement("ScreenGui", {}, hud);
 let gui: Roact.Tree;
 
 function UpdateUI() {
+    if (!hasShip) return;
+    if (shipId === -1) return;
     if (gui === undefined) return;
     hud.speed = Roact.createElement(
         SpeedDisplay,
@@ -55,9 +57,6 @@ function UpdateUI() {
 }
 
 player.CharacterAdded.Connect((character) => {
-    //Disable player animations
-    character.WaitForChild("Animate").Destroy();
-    (character.WaitForChild("HumanoidRootPart") as Part).Anchored = true;
     //Setup ship
     hasShip = true;
     targetPower = 0;
@@ -73,10 +72,14 @@ player.CharacterAdded.Connect((character) => {
     character.SetAttribute("rudder", 0);
     character.SetAttribute("targetPower", targetPower);
     character.SetAttribute("targetTurn", targetTurn);
-    character.SetAttribute("maxRudder", 1);
 
     //Enable GUI
     gui = Roact.mount(ui, player.WaitForChild("PlayerGui"));
+});
+player.CharacterRemoving.Connect(() => {
+    hasShip = false;
+    shipId = -1;
+    Roact.unmount(gui);
 });
 
 const UIS = UserInputService;

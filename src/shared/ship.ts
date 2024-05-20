@@ -1,7 +1,7 @@
 import { ReplicatedStorage } from "@rbxts/services";
 
 const DRAG = 0.1;
-const TURN_DRAG = 0.075;
+const TURN_DRAG = 0.05;
 
 export class Ship {
     id: number;
@@ -14,9 +14,6 @@ export class Ship {
     turnSpeed: number; //degrees/1 stud/s
     targetPower: number = 0; //0 to 1
     targetTurn: number = 0; //-1 to 1
-    x: number;
-    y: number;
-    z: number;
     model: Model;
 
     constructor(
@@ -27,8 +24,6 @@ export class Ship {
         maxRudder: number,
         acceleration: number,
         turnSpeed: number,
-        x: number,
-        z: number,
     ) {
         this.id = id;
         this.model = model;
@@ -37,15 +32,18 @@ export class Ship {
         this.maxRudder = maxRudder;
         this.acceleration = acceleration;
         this.turnSpeed = turnSpeed;
-        this.x = x;
-        this.y = 38.2;
-        this.z = z;
 
-        // Setup model for tweening
+        // Set all attributes to pass to client
         model.SetAttribute("id", this.id);
         model.SetAttribute("heading", this.heading);
         model.SetAttribute("speed", this.speed);
         model.SetAttribute("rudder", this.rudder);
+        model.SetAttribute("maxSpeed", this.maxSpeed);
+        model.SetAttribute("maxRudder", this.maxRudder);
+        model.SetAttribute("acceleration", this.acceleration);
+        model.SetAttribute("turnSpeed", this.turnSpeed);
+        model.SetAttribute("targetPower", this.targetPower);
+        model.SetAttribute("targetTurn", this.targetTurn);
 
         // Setup remote event for movement updates
         (ReplicatedStorage.WaitForChild("MovementUpdateEvent") as RemoteEvent).OnServerEvent.Connect(
@@ -56,6 +54,8 @@ export class Ship {
                 }
             },
         );
+
+        model.PrimaryPart!.CFrame = new CFrame(model.PrimaryPart!.Position.X, 38.5, model.PrimaryPart!.Position.Z);
     }
 
     TickMovement(dt: number) {
@@ -84,12 +84,19 @@ export class Ship {
             this.rudder =
                 math.round(math.max(this.rudder - this.turnSpeed * dt, this.targetTurn * this.maxRudder) * 100) / 100;
         this.heading = (math.round((this.heading + this.rudder * distance) * 10) / 10) % 360;
-        // Update position
-        this.x = math.round((this.x + distance * math.cos(math.rad(this.heading - 90))) * 100) / 100;
-        this.z = math.round((this.z + distance * math.sin(math.rad(this.heading - 90))) * 100) / 100;
-        // Move model
-        this.model.PrimaryPart!.CFrame = new CFrame(this.x, this.y, this.z).mul(
-            CFrame.Angles(0, math.rad(-this.heading), 0),
+
+        // Update model velocity
+        (this.model.PrimaryPart!.WaitForChild("LinearVelocity") as LinearVelocity).PlaneVelocity = new Vector2(
+            math.sin(math.rad(-this.heading)) * this.speed * 0.503,
+            math.cos(math.rad(-this.heading)) * this.speed * 0.503,
+        );
+
+        // Update model orientation
+        (this.model.PrimaryPart!.WaitForChild("AlignOrientation") as AlignOrientation).CFrame = new CFrame(
+            this.model.PrimaryPart!.Position,
+            this.model.PrimaryPart!.Position.add(
+                new Vector3(math.sin(math.rad(-this.heading)), 0, math.cos(math.rad(-this.heading))),
+            ),
         );
 
         // Update model attributes

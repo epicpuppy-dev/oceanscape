@@ -4,31 +4,45 @@ import { Ship } from "shared/ship";
 const ships: Ship[] = [];
 let id = 0;
 
+function onPlayerRemoved(player: Player) {
+    const character = player.Character;
+    if (character !== undefined) onCharacterRemoved(character);
+}
+
+function onCharacterRemoved(character: Model) {
+    const ship = ships.find((ship) => ship.model === character);
+    character.WaitForChild("HumaniodRootPart").WaitForChild("Attachment").Destroy();
+    if (ship !== undefined) destroyShip(ship.id);
+}
+
 function onPlayerAdded(player: Player) {
     player.CharacterAdded.Connect((character) => {
-        wait(1);
+        //Disable player animations
+        character.WaitForChild("Animate").Destroy();
+        wait(0.1);
         //Initialize ship class
-        const ship = new Ship(
-            ++id,
-            character,
-            character.PrimaryPart!.CFrame.LookVector.Y,
-            25,
-            1,
-            3,
-            0.3,
-            character.PrimaryPart!.Position.X,
-            character.PrimaryPart!.Position.Z,
-        );
+        const ship = new Ship(++id, character, character.PrimaryPart!.CFrame.LookVector.Y, 25, 1, 2, 0.3);
         ships.push(ship);
     });
+    player.CharacterRemoving.Connect(onCharacterRemoved);
 }
 
 Players.PlayerAdded.Connect(onPlayerAdded);
+Players.PlayerRemoving.Connect(onPlayerRemoved);
 
 function tickShipMovement() {
     const dt = wait(0.05)[0];
-    ships.forEach((ship) => ship.TickMovement(dt));
+    for (const ship of ships) {
+        ship.TickMovement(dt);
+    }
     tickShipMovement();
+}
+
+function destroyShip(shipId: number) {
+    const index = ships.findIndex((ship) => ship.id === shipId);
+    if (index !== -1) {
+        ships.remove(index);
+    }
 }
 
 tickShipMovement();
