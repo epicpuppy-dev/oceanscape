@@ -1,6 +1,6 @@
-import { Players, ReplicatedStorage, RunService, UserInputService } from "@rbxts/services";
+import { Players, ReplicatedStorage, RunService, StarterGui, UserInputService } from "@rbxts/services";
 import Roact from "@rbxts/roact";
-import { SpeedDisplay, HeadingDisplay, TurnBar } from "shared/ship.hud";
+import { SpeedDisplay, HeadingDisplay, TurnBar, ShipStatus } from "shared/ship.hud";
 
 const player = Players.LocalPlayer;
 
@@ -25,7 +25,8 @@ let targetTurn = 0;
 const hud = {
     speed: Roact.createElement(SpeedDisplay, { speed: 0, targetPower: 0 }),
     heading: Roact.createElement(HeadingDisplay, { heading: 0 }),
-    turn: Roact.createElement(TurnBar, { rudder: 0, maxRudder: 1 }),
+    turn: Roact.createElement(TurnBar, { rudder: 0, maxRudder: 1, targetTurn: 0 }),
+    status: Roact.createElement(ShipStatus, { armor: 1, maxArmor: 1, hull: 1, maxHull: 1 }),
 };
 const ui = Roact.createElement("ScreenGui", {}, hud);
 let gui: Roact.Tree;
@@ -52,6 +53,13 @@ function UpdateUI() {
     hud.turn = Roact.createElement(TurnBar, {
         rudder: player.Character!.GetAttribute("rudder") as number,
         maxRudder: player.Character!.GetAttribute("maxRudder") as number,
+        targetTurn: player.Character!.GetAttribute("targetTurn") as number,
+    });
+    hud.status = Roact.createElement(ShipStatus, {
+        armor: player.Character!.GetAttribute("armor") as number,
+        maxArmor: player.Character!.GetAttribute("maxArmor") as number,
+        hull: player.Character!.GetAttribute("hull") as number,
+        maxHull: player.Character!.GetAttribute("maxHull") as number,
     });
     gui = Roact.update(gui, Roact.createElement("ScreenGui", {}, hud));
 }
@@ -129,3 +137,6 @@ UIS.InputEnded.Connect((input, chatting) => {
 });
 
 RunService.Heartbeat.Connect(UpdateUI);
+
+StarterGui.SetCoreGuiEnabled(Enum.CoreGuiType.Health, false);
+StarterGui.SetCoreGuiEnabled(Enum.CoreGuiType.Backpack, false);

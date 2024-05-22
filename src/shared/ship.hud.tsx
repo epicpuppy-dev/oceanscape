@@ -69,9 +69,11 @@ export function HeadingDisplay(props: HeadingDisplayProps) {
 interface TurnBarProps {
     rudder: number;
     maxRudder: number;
+    targetTurn: number;
 }
 
 export function TurnBar(props: TurnBarProps) {
+    if (props.rudder === 0 && props.targetTurn === 0) return <screengui />;
     let pos: UDim2;
     let size: UDim2;
     if (props.rudder >= 0) {
@@ -89,9 +91,84 @@ export function TurnBar(props: TurnBarProps) {
         </screengui>
     );
 }
-/*
-//Update GUI
-RunService.Heartbeat.Connect(() => {
-    
-});
-*/
+
+interface ShipStatusProps {
+    armor: number;
+    maxArmor: number;
+    hull: number;
+    maxHull: number;
+}
+
+export function ShipStatus(props: ShipStatusProps) {
+    return (
+        <screengui>
+            <frame
+                Size={new UDim2(0, 250, 0, 40)}
+                Position={new UDim2(0.5, -125, 1, -40)}
+                BackgroundColor3={Color3.fromRGB(155, 155, 155)}
+                BackgroundTransparency={1}
+            >
+                <frame
+                    Size={new UDim2(1, 0, 0, 20)}
+                    Position={new UDim2(0, 0, 0, 0)}
+                    BackgroundColor3={Color3.fromRGB(125, 125, 125)}
+                >
+                    <frame
+                        Size={new UDim2(props.armor / props.maxArmor, 0, 0, 20)}
+                        Position={new UDim2(0, 0, 0, 0)}
+                        BackgroundColor3={Color3.fromRGB(255, 255, 255)}
+                        BorderSizePixel={0}
+                    />
+                </frame>
+                <frame
+                    Size={new UDim2(1, 0, 0, 20)}
+                    Position={new UDim2(0, 0, 0, 20)}
+                    BackgroundColor3={Color3.fromRGB(125, 25, 25)}
+                >
+                    <frame
+                        Size={new UDim2(props.hull / props.maxHull, 0, 0, 20)}
+                        Position={new UDim2(0, 0, 0, 0)}
+                        BackgroundColor3={Color3.fromRGB(255, 50, 50)}
+                        BorderSizePixel={0}
+                    />
+                </frame>
+                <textlabel
+                    Size={new UDim2(0, 50, 0, 20)}
+                    Position={new UDim2(1, -53, 0, 0)}
+                    TextSize={10}
+                    TextXAlignment={Enum.TextXAlignment.Right}
+                    Text={tostring(math.round(props.armor))}
+                    BackgroundTransparency={1}
+                    TextColor3={Color3.fromRGB(0, 0, 0)}
+                />
+                <textlabel
+                    Size={new UDim2(0, 50, 0, 20)}
+                    Position={new UDim2(1, -53, 0, 20)}
+                    TextSize={10}
+                    TextXAlignment={Enum.TextXAlignment.Right}
+                    Text={tostring(math.round(props.hull))}
+                    BackgroundTransparency={1}
+                    TextColor3={Color3.fromRGB(0, 0, 0)}
+                />
+                <textlabel
+                    Size={new UDim2(0, 50, 0, 20)}
+                    Position={new UDim2(0, 5, 0, 0)}
+                    TextSize={10}
+                    TextXAlignment={Enum.TextXAlignment.Left}
+                    Text={tostring(math.round((props.armor / props.maxArmor) * 100)) + "%"}
+                    BackgroundTransparency={1}
+                    TextColor3={Color3.fromRGB(0, 0, 0)}
+                />
+                <textlabel
+                    Size={new UDim2(0, 50, 0, 20)}
+                    Position={new UDim2(0, 5, 0, 20)}
+                    TextSize={10}
+                    TextXAlignment={Enum.TextXAlignment.Left}
+                    Text={tostring(math.round((props.hull / props.maxHull) * 100)) + "%"}
+                    BackgroundTransparency={1}
+                    TextColor3={Color3.fromRGB(0, 0, 0)}
+                />
+            </frame>
+        </screengui>
+    );
+}

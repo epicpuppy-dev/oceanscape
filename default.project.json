@@ -74,6 +74,12 @@
 				"FogEnd": 4000,
 				"ClockTime": 16
 			}
+		},
+		"Players": {
+			"$className": "Players",
+			"$properties": {
+				"RespawnTime": 10
+			}
 		}
 	}
 }

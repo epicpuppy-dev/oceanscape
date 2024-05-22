@@ -14,6 +14,10 @@ export class Ship {
     turnSpeed: number; //degrees/1 stud/s
     targetPower: number = 0; //0 to 1
     targetTurn: number = 0; //-1 to 1
+    armor: number;
+    maxArmor: number;
+    hull: number;
+    maxHull: number;
     model: Model;
 
     constructor(
@@ -24,6 +28,8 @@ export class Ship {
         maxRudder: number,
         acceleration: number,
         turnSpeed: number,
+        armor: number,
+        hull: number,
     ) {
         this.id = id;
         this.model = model;
@@ -32,6 +38,10 @@ export class Ship {
         this.maxRudder = maxRudder;
         this.acceleration = acceleration;
         this.turnSpeed = turnSpeed;
+        this.armor = armor;
+        this.maxArmor = armor;
+        this.hull = hull;
+        this.maxHull = hull;
 
         // Set all attributes to pass to client
         model.SetAttribute("id", this.id);
@@ -42,8 +52,10 @@ export class Ship {
         model.SetAttribute("maxRudder", this.maxRudder);
         model.SetAttribute("acceleration", this.acceleration);
         model.SetAttribute("turnSpeed", this.turnSpeed);
-        model.SetAttribute("targetPower", this.targetPower);
-        model.SetAttribute("targetTurn", this.targetTurn);
+        model.SetAttribute("armor", this.armor);
+        model.SetAttribute("maxArmor", this.maxArmor);
+        model.SetAttribute("hull", this.hull);
+        model.SetAttribute("maxHull", this.maxHull);
 
         // Setup remote event for movement updates
         (ReplicatedStorage.WaitForChild("MovementUpdateEvent") as RemoteEvent).OnServerEvent.Connect(
@@ -103,5 +115,29 @@ export class Ship {
         this.model.SetAttribute("heading", this.heading);
         this.model.SetAttribute("speed", this.speed);
         this.model.SetAttribute("rudder", this.rudder);
+    }
+
+    DamageShip(damage: number) {
+        // If armor is over 25%, all damage is absorbed by armor
+        if (this.armor / this.maxArmor > 0.25) {
+            this.armor = math.max(this.armor - damage, 0);
+            return;
+        }
+        // If armor is under 25%, armor absorbs a decreasing percentage of damage
+        if (this.armor > 0) {
+            const absorbed = math.round((this.armor / this.maxArmor) * 4 * damage * 100) / 100;
+            this.armor = math.max(this.armor - absorbed, 0);
+            damage -= absorbed;
+        }
+        // Apply remaining damage to hull
+        this.hull = math.max(this.hull - damage, 0);
+        // If hull is 0, destroy the ship
+        if (this.hull === 0) {
+            this.DestroyShip();
+        }
+    }
+
+    DestroyShip() {
+        (this.model.WaitForChild("Humanoid") as Humanoid).Health = 0;
     }
 }
