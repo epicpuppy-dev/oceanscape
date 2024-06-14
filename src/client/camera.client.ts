@@ -16,7 +16,6 @@ const CAMERA_MOD = 0.01;
 const CAMERA_BUMP = 15;
 
 player.CharacterAdded.Connect((character) => {
-    const humanoid = character.WaitForChild("Humanoid") as Humanoid;
     const rootPart = character.WaitForChild("HumanoidRootPart") as BasePart;
 
     function playerInput(actionName: string, inputState: Enum.UserInputState, inputObject: InputObject) {
@@ -31,20 +30,21 @@ player.CharacterAdded.Connect((character) => {
     function scrollInput(actionName: string, inputState: Enum.UserInputState, inputObject: InputObject) {
         cameraDistance = math.clamp(cameraDistance - inputObject.Position.Z, 20, 50);
         cameraHeight = cameraDistance / cameraHeightRatio;
-        print(inputObject.Delta.Z);
     }
 
     function updateCamera() {
+        const posX = rootPart.CFrame.Position.X;
+        const posZ = rootPart.CFrame.Position.Z;
         // Calculate camera position
-        const cameraX = rootPart.Position.X - cameraDistance * math.cos(math.rad(cameraHeading));
-        const cameraZ = rootPart.Position.Z - cameraDistance * math.sin(math.rad(cameraHeading));
+        const cameraX = posX - cameraDistance * math.cos(math.rad(cameraHeading));
+        const cameraZ = posZ - cameraDistance * math.sin(math.rad(cameraHeading));
         // Calculate point camera is focusing on
-        const cameraFocusX = rootPart.Position.X + cameraFocus * math.cos(math.rad(cameraHeading));
-        const cameraFocusZ = rootPart.Position.Z + cameraFocus * math.sin(math.rad(cameraHeading));
+        const cameraFocusX = posX + cameraFocus * math.cos(math.rad(cameraHeading));
+        const cameraFocusZ = posZ + cameraFocus * math.sin(math.rad(cameraHeading));
         // Move camera
         camera.CFrame = CFrame.lookAt(
-            new Vector3(cameraX, rootPart.Position.Y + cameraHeight, cameraZ),
-            new Vector3(rootPart.Position.X + cameraFocusX, 28.2, rootPart.Position.Z + cameraFocusZ),
+            new Vector3(cameraX, rootPart.CFrame.Position.Y + cameraHeight, cameraZ),
+            new Vector3(cameraFocusX, 0, cameraFocusZ),
         );
     }
 

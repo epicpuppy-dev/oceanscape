@@ -67,7 +67,7 @@ export class Ship {
             },
         );
 
-        model.PrimaryPart!.CFrame = new CFrame(model.PrimaryPart!.Position.X, 38.5, model.PrimaryPart!.Position.Z);
+        model.PrimaryPart!.CFrame = new CFrame(model.PrimaryPart!.Position.X, 2, model.PrimaryPart!.Position.Z);
     }
 
     TickMovement(dt: number) {

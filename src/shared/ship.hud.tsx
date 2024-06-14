@@ -172,3 +172,16 @@ export function ShipStatus(props: ShipStatusProps) {
         </screengui>
     );
 }
+
+export function Crosshair() {
+    return (
+        <screengui>
+            <frame
+                Size={new UDim2(0, 2, 0, 2)}
+                Position={new UDim2(0.5, -1, 0.5, -1)}
+                BackgroundColor3={Color3.fromRGB(255, 255, 255)}
+                BorderSizePixel={0}
+            />
+        </screengui>
+    );
+}

@@ -48,7 +48,8 @@
 		"Workspace": {
 			"$className": "Workspace",
 			"$properties": {
-				"FilteringEnabled": true
+				"FilteringEnabled": true,
+				"Gravity": 1.962
 			},
 			"Terrain": {
 				"$path": "assets/Terrain.rbxm"
