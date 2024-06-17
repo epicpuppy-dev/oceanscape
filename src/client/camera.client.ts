@@ -17,6 +17,8 @@ const CAMERA_BUMP = 15;
 
 player.CharacterAdded.Connect((character) => {
     const rootPart = character.WaitForChild("HumanoidRootPart") as BasePart;
+    character.SetAttribute("CameraHeading", cameraHeading);
+    character.SetAttribute("CameraFocus", cameraFocus);
 
     function playerInput(actionName: string, inputState: Enum.UserInputState, inputObject: InputObject) {
         // Calculate camera/player rotation on input change
@@ -24,6 +26,8 @@ player.CharacterAdded.Connect((character) => {
             cameraHeading = cameraHeading + inputObject.Delta.X * 0.5;
             rawCameraFocus = math.clamp(rawCameraFocus - inputObject.Delta.Y, 0, 450);
             cameraFocus = math.pow(CAMERA_BASE, 1 + rawCameraFocus * CAMERA_MOD) + CAMERA_BUMP;
+            character.SetAttribute("CameraHeading", cameraHeading);
+            character.SetAttribute("CameraFocus", cameraFocus);
         }
     }
 
