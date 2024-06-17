@@ -118,23 +118,25 @@ export class Ship {
     }
 
     DamageShip(damage: number) {
-        // If armor is over 25%, all damage is absorbed by armor
-        if (this.armor / this.maxArmor > 0.25) {
-            this.armor = math.max(this.armor - damage, 0);
-            return;
-        }
-        // If armor is under 25%, armor absorbs a decreasing percentage of damage
+        let damageLeft = damage;
+
         if (this.armor > 0) {
-            const absorbed = math.round((this.armor / this.maxArmor) * 4 * damage * 100) / 100;
+            const percentAbsorbed = math.min((3 * this.armor) / this.maxArmor + 0.25, 1);
+
+            const absorbed = math.min(math.round(percentAbsorbed * damage * 100) / 100, this.armor);
             this.armor = math.max(this.armor - absorbed, 0);
-            damage -= absorbed;
+            damageLeft -= absorbed;
         }
         // Apply remaining damage to hull
-        this.hull = math.max(this.hull - damage, 0);
+        this.hull = math.max(this.hull - damageLeft, 0);
         // If hull is 0, destroy the ship
-        if (this.hull === 0) {
+        if (this.hull <= 0) {
             this.DestroyShip();
         }
+
+        // Update model attributes
+        this.model.SetAttribute("armor", this.armor);
+        this.model.SetAttribute("hull", this.hull);
     }
 
     DestroyShip() {
