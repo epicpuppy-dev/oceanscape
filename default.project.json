@@ -72,7 +72,7 @@
 			"$properties": {
 				"Technology": "Future",
 				"FogStart": 1000,
-				"FogEnd": 4000,
+				"FogEnd": 5000,
 				"ClockTime": 16
 			}
 		},
