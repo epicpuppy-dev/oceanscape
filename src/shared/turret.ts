@@ -1,4 +1,4 @@
-import { ReplicatedStorage } from "@rbxts/services";
+import { InsertService, ReplicatedStorage } from "@rbxts/services";
 import { Ship } from "./ship";
 
 export class Turret {
@@ -13,6 +13,7 @@ export class Turret {
     velocity: number; // Speed of projectile
     targetDistance: number; // Distance to target
     model: Model;
+    servo: HingeConstraint;
     ship: Ship;
 
     constructor(
@@ -23,8 +24,9 @@ export class Turret {
         heading: number,
         angle: number,
         velocity: number,
-        model: Model,
+        modelID: number,
         ship: Ship,
+        attachment: Attachment,
     ) {
         this.damage = damage;
         this.reloadTime = reloadTime;
@@ -36,8 +38,25 @@ export class Turret {
         this.targetAngle = angle;
         this.velocity = velocity;
         this.targetDistance = 100;
-        this.model = model;
+        this.model = InsertService.LoadAsset(modelID).GetChildren()[0] as Model;
         this.ship = ship;
+
+        this.model.Parent = this.ship.model;
+
+        // Scale turret model
+        this.model.ScaleTo(0.2);
+        this.model.MoveTo(
+            new Vector3(this.ship.model.PrimaryPart!.Position.X, 4, this.ship.model.PrimaryPart!.Position.Z),
+        );
+        // Attach to ship
+        this.servo = new Instance("HingeConstraint");
+        this.servo.Parent = this.model.PrimaryPart!;
+        this.servo.Attachment0 = this.model.PrimaryPart!.FindFirstChild("MountAttachment") as Attachment;
+        this.servo.Attachment1 = attachment;
+        // Setup servo
+        this.servo.ActuatorType = Enum.ActuatorType.Servo;
+        this.servo.AngularSpeed = 1000;
+        this.servo.ServoMaxTorque = 10000;
     }
     TickTurret(dt: number) {
         // Code to rotate turret towards target

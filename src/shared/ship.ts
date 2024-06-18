@@ -20,7 +20,7 @@ export class Ship {
     hull: number;
     maxHull: number;
     model: Model;
-    turrets: Turret[];
+    turrets: Turret[] = [];
 
     constructor(
         id: number,
@@ -32,7 +32,7 @@ export class Ship {
         turnSpeed: number,
         armor: number,
         hull: number,
-        turrets: Turret[],
+        turrets: number,
     ) {
         this.id = id;
         this.model = model;
@@ -45,9 +45,9 @@ export class Ship {
         this.maxArmor = armor;
         this.hull = hull;
         this.maxHull = hull;
-        this.turrets = turrets;
 
-        for (let i = 0; i < 6; i++) {
+        for (let i = 0; i < turrets; i++) {
+            const attachment = this.model.WaitForChild("Hardpoints").WaitForChild("Turret" + i) as Attachment;
             const turret = new Turret(
                 20, //dmg
                 10, //reload
@@ -56,8 +56,9 @@ export class Ship {
                 0, //heading
                 0, //angle
                 238.5, //velocity
-                InsertService.LoadAsset(17899824413).GetChildren()[0] as Model, //model
+                18111406054, //model
                 this,
+                attachment,
             );
             this.turrets.push(turret);
         }
