@@ -57,6 +57,7 @@ export class Ship {
                 0, //angle
                 238.5, //velocity
                 InsertService.LoadAsset(17899824413).GetChildren()[0] as Model, //model
+                this,
             );
             this.turrets.push(turret);
         }
