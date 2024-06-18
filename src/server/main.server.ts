@@ -21,7 +21,7 @@ function onPlayerAdded(player: Player) {
         character.WaitForChild("Animate").Destroy();
         wait(0.1);
         //Initialize ship class
-        const ship = new Ship(++id, character, character.PrimaryPart!.CFrame.LookVector.Y, 25, 1, 2, 0.3, 600, 800);
+        const ship = new Ship(++id, character, character.PrimaryPart!.CFrame.LookVector.Y, 32, 2.86, 2, 2.86, 200, 300);
         ships.push(ship);
         (player.Character!.WaitForChild("Humanoid") as Humanoid).Died.Connect(() => onCharacterDied(player.Character!));
     });
