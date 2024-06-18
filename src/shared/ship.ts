@@ -1,4 +1,5 @@
-import { ReplicatedStorage } from "@rbxts/services";
+import { InsertService, ReplicatedStorage } from "@rbxts/services";
+import { Turret } from "./turret";
 
 const DRAG = 0.1;
 const TURN_DRAG = 0.05;
@@ -19,6 +20,7 @@ export class Ship {
     hull: number;
     maxHull: number;
     model: Model;
+    turrets: Turret[];
 
     constructor(
         id: number,
@@ -30,6 +32,7 @@ export class Ship {
         turnSpeed: number,
         armor: number,
         hull: number,
+        turrets: Turret[],
     ) {
         this.id = id;
         this.model = model;
@@ -42,7 +45,21 @@ export class Ship {
         this.maxArmor = armor;
         this.hull = hull;
         this.maxHull = hull;
+        this.turrets = turrets;
 
+        for (let i = 0; i < 6; i++) {
+            const turret = new Turret(
+                20, //dmg
+                10, //reload
+                5.8, //range
+                90, //rotation
+                0, //heading
+                0, //angle
+                238.5, //velocity
+                InsertService.LoadAsset(17899824413).GetChildren()[0] as Model, //model
+            );
+            this.turrets.push(turret);
+        }
         // Set all attributes to pass to client
         model.SetAttribute("id", this.id);
         model.SetAttribute("heading", this.heading);

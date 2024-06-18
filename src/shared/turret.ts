@@ -1,4 +1,5 @@
 import { ReplicatedStorage } from "@rbxts/services";
+import { Ship } from "./ship";
 
 export class Turret {
     damage: number; // Damage per shot
@@ -11,6 +12,8 @@ export class Turret {
     targetAngle: number; // Target angle of fire
     velocity: number; // Speed of projectile
     targetDistance: number; // Distance to target
+    model: Model;
+    ship: Ship;
 
     constructor(
         damage: number,
@@ -20,7 +23,8 @@ export class Turret {
         heading: number,
         angle: number,
         velocity: number,
-        targetDistance: number,
+        model: Model,
+        ship: Ship,
     ) {
         this.damage = damage;
         this.reloadTime = reloadTime;
@@ -31,7 +35,9 @@ export class Turret {
         this.angle = angle;
         this.targetAngle = angle;
         this.velocity = velocity;
-        this.targetDistance = targetDistance;
+        this.targetDistance = 100;
+        this.model = model;
+        this.ship = ship;
     }
     TickTurret(dt: number) {
         // Code to rotate turret towards target
