@@ -1,21 +1,15 @@
-import { InsertService, Workspace } from "@rbxts/services";
-import { discAlgorithm, haltonSequence } from "shared/gen";
+import { Workspace } from "@rbxts/services";
+import { discAlgorithm } from "shared/gen";
+import { Island } from "shared/island";
 
 function generateIsland(parent: Instance, x: number, y: number) {
-    const island = InsertService.LoadAsset(17900649471).GetChildren()[0] as Model;
-    island.Parent = parent;
-    //Move island randomly
-    island.MoveTo(new Vector3(x, -3, y));
-    //Set random rotation
-    island.PrimaryPart!.CFrame = new CFrame(island.PrimaryPart!.Position).mul(
-        CFrame.Angles(0, math.rad(math.random() * 360), 0),
-    );
+    const island = new Island("SmallA", x, y, math.random() * 360, parent, true);
 
     return island;
 }
 
 function generateWorld(bases: [number, number][]) {
-    const islandList = [];
+    const islandList: Island[] = [];
     const folder = new Instance("Folder");
     folder.Name = "Islands";
     folder.Parent = Workspace;
