@@ -88,10 +88,13 @@ export class Ship {
                 this.targetPower *
                 math.abs((this.maxSpeed * this.targetPower - this.speed) / this.maxSpeed) *
                 dt;
+        // Apply speed drag
+        this.speed -= DRAG * (this.speed - this.maxSpeed * this.targetPower) * dt;
+        // Apply fixed drag
         if (this.speed > 0 && this.speed > this.maxSpeed * this.targetPower)
-            this.speed -= DRAG * (this.speed - this.maxSpeed * this.targetPower) * dt;
+            this.speed = math.max(this.speed - DRAG * dt, 0);
         else if (this.speed < 0 && this.speed < this.maxSpeed * this.targetPower)
-            this.speed -= DRAG * (this.speed - this.maxSpeed * this.targetPower) * dt;
+            this.speed = math.min(this.speed + DRAG * dt, 0);
         if (math.abs(this.rudder) > 0.1) {
             this.speed -= TURN_DRAG * this.speed * (math.abs(this.rudder) / this.maxRudder) * dt;
         }
