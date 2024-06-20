@@ -31,11 +31,13 @@ Players.PlayerAdded.Connect(onPlayerAdded);
 Players.PlayerRemoving.Connect(onPlayerRemoved);
 
 function tickShipMovement() {
-    const dt = wait(0.05)[0];
-    for (const ship of ships) {
-        ship.TickMovement(dt);
+    // eslint-disable-next-line no-constant-condition
+    while (true) {
+        const dt = wait(0.05)[0];
+        for (const ship of ships) {
+            ship.TickMovement(dt);
+        }
     }
-    tickShipMovement();
 }
 
 function destroyShip(shipId: number) {
