@@ -60,10 +60,13 @@ export class Turret {
     }
     TickTurret(dt: number) {
         // Code to rotate turret towards target
+        this.targetHeading = this.ship.cameraHeading;
         this.targetAngle = math.asin(((9.81 * this.targetDistance) / this.velocity) ^ 2) / 2;
         const delta = this.targetHeading - this.heading;
         this.heading += math.clamp(delta, -this.rotationSpeed * dt, this.rotationSpeed * dt);
         const delta2 = this.targetAngle - this.angle;
         this.angle += math.clamp(delta2, -this.rotationSpeed * dt, this.rotationSpeed * dt);
+        this.servo.TargetAngle = this.heading;
+        print(this.heading, this.angle);
     }
 }

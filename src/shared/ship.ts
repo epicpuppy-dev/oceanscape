@@ -87,7 +87,7 @@ export class Ship {
                 }
             },
         );
-        (ReplicatedStorage.WaitForChild("MovementUpdateEvent") as RemoteEvent).OnServerEvent.Connect(
+        (ReplicatedStorage.WaitForChild("CameraUpdateEvent") as RemoteEvent).OnServerEvent.Connect(
             (player, shipId, cameraHeading, cameraFocus) => {
                 if (typeIs(shipId, "number") && shipId === this.id) {
                     if (typeIs(cameraHeading, "number")) this.cameraHeading = cameraHeading;
@@ -144,6 +144,9 @@ export class Ship {
         this.model.SetAttribute("heading", this.heading);
         this.model.SetAttribute("speed", this.speed);
         this.model.SetAttribute("rudder", this.rudder);
+        for (const turret of this.turrets) {
+            turret.TickTurret(dt);
+        }
     }
 
     DamageShip(damage: number) {

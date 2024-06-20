@@ -33,6 +33,7 @@ player.CharacterAdded.Connect((character) => {
             cameraHeading = cameraHeading + inputObject.Delta.X * 0.5;
             rawCameraFocus = math.clamp(rawCameraFocus - inputObject.Delta.Y, 0, 450);
             cameraFocus = math.pow(CAMERA_BASE, 1 + rawCameraFocus * CAMERA_MOD) + CAMERA_BUMP;
+            sendCameraUpdate();
         }
     }
 
