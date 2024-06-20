@@ -1,4 +1,11 @@
-import { ContextActionService, Players, RunService, UserInputService, Workspace } from "@rbxts/services";
+import {
+    ContextActionService,
+    Players,
+    ReplicatedStorage,
+    RunService,
+    UserInputService,
+    Workspace,
+} from "@rbxts/services";
 
 // Adapted from https://devforum.roblox.com/t/help-making-camera-follow-mouse/2188908/11
 const camera = Workspace.CurrentCamera!;
@@ -26,8 +33,6 @@ player.CharacterAdded.Connect((character) => {
             cameraHeading = cameraHeading + inputObject.Delta.X * 0.5;
             rawCameraFocus = math.clamp(rawCameraFocus - inputObject.Delta.Y, 0, 450);
             cameraFocus = math.pow(CAMERA_BASE, 1 + rawCameraFocus * CAMERA_MOD) + CAMERA_BUMP;
-            character.SetAttribute("CameraHeading", cameraHeading);
-            character.SetAttribute("CameraFocus", cameraFocus);
         }
     }
 
@@ -65,3 +70,8 @@ player.CharacterAdded.Connect((character) => {
         updateCamera();
     });
 });
+
+function sendCameraUpdate() {
+    const shipId = player.Character!.GetAttribute("id") as number;
+    (ReplicatedStorage.WaitForChild("CameraUpdateEvent") as RemoteEvent).FireServer(shipId, cameraHeading, cameraFocus);
+}
