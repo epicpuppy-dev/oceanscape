@@ -14,6 +14,7 @@ export class Turret {
     targetDistance: number; // Distance to target
     model: Model;
     servo: HingeConstraint;
+    barrelServo: HingeConstraint;
     ship: Ship;
 
     constructor(
@@ -61,20 +62,26 @@ export class Turret {
         this.servo.ActuatorType = Enum.ActuatorType.Servo;
         this.servo.AngularSpeed = 1000;
         this.servo.ServoMaxTorque = 100000;
+        this.barrelServo = this.model.WaitForChild("Barrel").WaitForChild("HingeConstraint") as HingeConstraint;
     }
     TickTurret(dt: number) {
         // Code to rotate turret towards target
-        this.targetHeading = (-this.ship.cameraHeading + 90) % 360;
-        this.targetAngle = math.asin(((9.81 * this.targetDistance) / this.velocity) ** 2) / 2;
+        this.targetHeading = (-this.ship.cameraHeading + 90 + this.ship.heading) % 360;
+        this.targetDistance = this.ship.cameraFocus;
+        this.targetAngle = math.deg(math.asin((9.81 * this.targetDistance) / this.velocity ** 2) / 2);
         const headingDeltaCW = this.targetHeading - this.heading;
         let headingDeltaCCW = this.targetHeading - this.heading + 360;
         if (headingDeltaCCW > 360) headingDeltaCCW -= 720;
-        print(math.round(headingDeltaCW), math.round(headingDeltaCCW));
         const delta = math.abs(headingDeltaCW) < math.abs(headingDeltaCCW) ? headingDeltaCW : headingDeltaCCW;
         this.heading += math.round(math.clamp(delta, -this.rotationSpeed * dt, this.rotationSpeed * dt) * 100) / 100;
         this.heading = this.heading % 360;
         const angleDelta = this.targetAngle - this.angle;
         this.angle += math.clamp(angleDelta, -this.rotationSpeed * dt, this.rotationSpeed * dt);
+        if (this.angle > 30 || this.angle !== this.angle) {
+            this.angle = 30;
+        }
         this.servo.TargetAngle = this.heading;
+        this.barrelServo.TargetAngle = this.angle;
+        print(this.angle);
     }
 }
