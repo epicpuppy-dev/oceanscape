@@ -20,6 +20,8 @@ export class Ship {
     hull: number;
     maxHull: number;
     model: Model;
+    cameraHeading: number = 0;
+    cameraFocus: number = 100;
     turrets: Turret[] = [];
 
     constructor(
@@ -82,6 +84,14 @@ export class Ship {
                 if (typeIs(shipId, "number") && shipId === this.id) {
                     if (typeIs(targetPower, "number")) this.targetPower = targetPower;
                     if (typeIs(targetTurn, "number")) this.targetTurn = targetTurn;
+                }
+            },
+        );
+        (ReplicatedStorage.WaitForChild("MovementUpdateEvent") as RemoteEvent).OnServerEvent.Connect(
+            (player, shipId, cameraHeading, cameraFocus) => {
+                if (typeIs(shipId, "number") && shipId === this.id) {
+                    if (typeIs(cameraHeading, "number")) this.cameraHeading = cameraHeading;
+                    if (typeIs(cameraFocus, "number")) this.cameraFocus = cameraFocus;
                 }
             },
         );
