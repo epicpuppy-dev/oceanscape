@@ -30,7 +30,7 @@ player.CharacterAdded.Connect((character) => {
     function playerInput(actionName: string, inputState: Enum.UserInputState, inputObject: InputObject) {
         // Calculate camera/player rotation on input change
         if (inputState === Enum.UserInputState.Change) {
-            cameraHeading = cameraHeading + inputObject.Delta.X * 0.5;
+            cameraHeading = (cameraHeading + inputObject.Delta.X * 0.5) % 360;
             rawCameraFocus = math.clamp(rawCameraFocus - inputObject.Delta.Y, 0, 450);
             cameraFocus = math.pow(CAMERA_BASE, 1 + rawCameraFocus * CAMERA_MOD) + CAMERA_BUMP;
             sendCameraUpdate();

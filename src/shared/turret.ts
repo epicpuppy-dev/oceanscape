@@ -48,6 +48,10 @@ export class Turret {
         this.model.MoveTo(
             new Vector3(this.ship.model.PrimaryPart!.Position.X, 4, this.ship.model.PrimaryPart!.Position.Z),
         );
+
+        // Fix servo issue
+        this.model.PrimaryPart!.CanCollide = false;
+
         // Attach to ship
         this.servo = new Instance("HingeConstraint");
         this.servo.Parent = this.model.PrimaryPart!;
@@ -56,17 +60,21 @@ export class Turret {
         // Setup servo
         this.servo.ActuatorType = Enum.ActuatorType.Servo;
         this.servo.AngularSpeed = 1000;
-        this.servo.ServoMaxTorque = 10000;
+        this.servo.ServoMaxTorque = 100000;
     }
     TickTurret(dt: number) {
         // Code to rotate turret towards target
-        this.targetHeading = this.ship.cameraHeading;
-        this.targetAngle = math.asin(((9.81 * this.targetDistance) / this.velocity) ^ 2) / 2;
-        const delta = this.targetHeading - this.heading;
-        this.heading += math.clamp(delta, -this.rotationSpeed * dt, this.rotationSpeed * dt);
-        const delta2 = this.targetAngle - this.angle;
-        this.angle += math.clamp(delta2, -this.rotationSpeed * dt, this.rotationSpeed * dt);
+        this.targetHeading = (-this.ship.cameraHeading + 90) % 360;
+        this.targetAngle = math.asin(((9.81 * this.targetDistance) / this.velocity) ** 2) / 2;
+        const headingDeltaCW = this.targetHeading - this.heading;
+        let headingDeltaCCW = this.targetHeading - this.heading + 360;
+        if (headingDeltaCCW > 360) headingDeltaCCW -= 720;
+        print(math.round(headingDeltaCW), math.round(headingDeltaCCW));
+        const delta = math.abs(headingDeltaCW) < math.abs(headingDeltaCCW) ? headingDeltaCW : headingDeltaCCW;
+        this.heading += math.round(math.clamp(delta, -this.rotationSpeed * dt, this.rotationSpeed * dt) * 100) / 100;
+        this.heading = this.heading % 360;
+        const angleDelta = this.targetAngle - this.angle;
+        this.angle += math.clamp(angleDelta, -this.rotationSpeed * dt, this.rotationSpeed * dt);
         this.servo.TargetAngle = this.heading;
-        print(this.heading, this.angle);
     }
 }
