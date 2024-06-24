@@ -84,4 +84,13 @@ export class Turret {
         this.barrelServo.TargetAngle = this.angle;
         print(this.angle);
     }
+    FireTurret() {
+        // Code to fire turret
+        const bullet = new Instance("Part");
+        const barrel = this.model.WaitForChild("Barrel") as BasePart;
+        bullet.Size = new Vector3(0.1, 0.1, 0.1);
+        bullet.Position = barrel.Position;
+        bullet.Orientation = barrel.Orientation;
+        bullet.ApplyImpulse(barrel.CFrame.LookVector.mul(this.velocity * bullet.Mass));
+    }
 }
