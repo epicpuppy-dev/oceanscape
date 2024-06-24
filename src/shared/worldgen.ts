@@ -2,8 +2,10 @@ import { Workspace } from "@rbxts/services";
 import { discAlgorithm } from "shared/gen";
 import { Island } from "shared/island";
 
+let id = 0;
+
 function generateIsland(parent: Instance, x: number, y: number) {
-    const island = new Island("SmallA", x, y, math.random() * 360, parent, true);
+    const island = new Island("SmallA", x, y, math.random() * 360, parent, true, ++id);
 
     return island;
 }
@@ -17,9 +19,10 @@ function generateWorld(bases: [number, number][]) {
     for (let i = 0; i < bases.size(); i++) {
         islandList.push(generateIsland(folder, bases[i][0], bases[i][1]));
     }
+    return islandList;
 }
 
-function generateDiscWorld(
+export function generateDiscWorld(
     seed: number,
     size: number,
     discs: number,
@@ -33,7 +36,5 @@ function generateDiscWorld(
         base[0] = base[0] - size / 2;
         base[1] = base[1] - size / 2;
     });
-    generateWorld(bases);
+    return generateWorld(bases);
 }
-
-generateDiscWorld(0, 6000, 3, [100, 2000, 4000], [0, 75, 40], [1, 3, 5], [100, 1000, 2000]);

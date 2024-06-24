@@ -1,4 +1,5 @@
 import { ReplicatedStorage } from "@rbxts/services";
+import { GamePlayer } from "./player";
 
 const DRAG = 0.1;
 const TURN_DRAG = 0.05;
@@ -21,8 +22,10 @@ export class Ship {
     model: Model;
     cameraHeading: number = 0;
     cameraFocus: number = 100;
+    player: GamePlayer | undefined;
 
     constructor(
+        anchor: Attachment,
         id: number,
         model: Model,
         heading: number,
@@ -32,6 +35,7 @@ export class Ship {
         turnSpeed: number,
         armor: number,
         hull: number,
+        player?: GamePlayer,
     ) {
         this.id = id;
         this.model = model;
@@ -44,6 +48,9 @@ export class Ship {
         this.maxArmor = armor;
         this.hull = hull;
         this.maxHull = hull;
+        this.player = player;
+
+        (this.model.WaitForChild("Hull").WaitForChild("PlaneConstraint") as PlaneConstraint).Attachment0 = anchor;
 
         // Set all attributes to pass to client
         model.SetAttribute("id", this.id);

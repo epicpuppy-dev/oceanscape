@@ -1,10 +1,12 @@
 export class GamePlayer {
+    id: number;
     state: PlayerState = PlayerState.Base;
     shipId: number | undefined;
     ship: Model | undefined;
     player: Player;
 
     constructor(player: Player) {
+        this.id = player.UserId;
         this.player = player;
     }
 

@@ -29,6 +29,12 @@
 			"CameraUpdateEvent": {
 				"$className": "RemoteEvent"
 			},
+			"BaseInfoEvent": {
+				"$className": "RemoteEvent"
+			},
+			"MapUpdateEvent": {
+				"$className": "RemoteEvent"
+			},
 			"Roact": {
 				"$path": "assets/lib/Roact.rbxm"
 			},
