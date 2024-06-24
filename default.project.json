@@ -29,6 +29,9 @@
 			"CameraUpdateEvent": {
 				"$className": "RemoteEvent"
 			},
+			"WeaponFireEvent": {
+				"$className": "RemoteEvent"
+			},
 			"Roact": {
 				"$path": "assets/lib/Roact.rbxm"
 			},

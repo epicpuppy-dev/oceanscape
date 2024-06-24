@@ -1,4 +1,4 @@
-import { InsertService, ReplicatedStorage } from "@rbxts/services";
+import { InsertService, ReplicatedStorage, Workspace } from "@rbxts/services";
 import { Ship } from "./ship";
 
 export class Turret {
@@ -16,6 +16,7 @@ export class Turret {
     servo: HingeConstraint;
     barrelServo: HingeConstraint;
     ship: Ship;
+    reloading: number = 0;
 
     constructor(
         damage: number,
@@ -82,15 +83,24 @@ export class Turret {
         }
         this.servo.TargetAngle = this.heading;
         this.barrelServo.TargetAngle = this.angle;
-        print(this.angle);
+        if (this.reloading > 0) {
+            this.reloading -= dt;
+        }
     }
     FireTurret() {
         // Code to fire turret
+        if (this.reloading > 0) return;
         const bullet = new Instance("Part");
         const barrel = this.model.WaitForChild("Barrel") as BasePart;
-        bullet.Size = new Vector3(0.1, 0.1, 0.1);
+        bullet.Parent = Workspace.WaitForChild("Bullets");
+        bullet.Size = new Vector3(0.2, 0.2, 0.2);
+        bullet.Material = Enum.Material.Neon;
+        bullet.Color = Color3.fromRGB(255, 153, 0);
         bullet.Position = barrel.Position;
         bullet.Orientation = barrel.Orientation;
-        bullet.ApplyImpulse(barrel.CFrame.LookVector.mul(this.velocity * bullet.Mass));
+        const firingDir = barrel.CFrame.mul(CFrame.Angles(0, math.rad(-90), 0));
+        bullet.ApplyImpulse(firingDir.LookVector.mul(this.velocity * bullet.Mass));
+        print("firing");
+        this.reloading = this.reloadTime;
     }
 }

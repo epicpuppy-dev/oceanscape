@@ -95,7 +95,13 @@ export class Ship {
                 }
             },
         );
-
+        (ReplicatedStorage.WaitForChild("WeaponFireEvent") as RemoteEvent).OnServerEvent.Connect((player, shipId) => {
+            if (typeIs(shipId, "number") && shipId === this.id) {
+                for (const turret of this.turrets) {
+                    turret.FireTurret();
+                }
+            }
+        });
         model.PrimaryPart!.CFrame = new CFrame(model.PrimaryPart!.Position.X, 2, model.PrimaryPart!.Position.Z);
     }
 
