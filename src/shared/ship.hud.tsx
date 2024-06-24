@@ -185,3 +185,50 @@ export function Crosshair() {
         </screengui>
     );
 }
+
+interface DockIndicatorProps {
+    canDock: boolean;
+    dockingTime: number;
+    isDocking: boolean;
+    timeLeft: number;
+    inCombat: boolean;
+}
+
+export function DockIndicator(props: DockIndicatorProps) {
+    if (!props.canDock && !props.isDocking) return <screengui />;
+    const dockingProgress = props.isDocking ? (props.dockingTime - props.timeLeft) / props.dockingTime : 0; // 0-1
+    const arrowNum = math.floor(dockingProgress * 4);
+    return (
+        <screengui>
+            <frame Size={new UDim2(0, 200, 0, 40)} Position={new UDim2(0.5, -100, 0, 100)}>
+                <frame
+                    Size={new UDim2(dockingProgress, 0, 1, 0)}
+                    BackgroundColor3={Color3.fromRGB(50, 150, 50)}
+                    BorderSizePixel={0}
+                />
+                <textlabel
+                    Size={new UDim2(1, 0, 0, 22)}
+                    Position={new UDim2(0, 0, 0, 0)}
+                    TextSize={16}
+                    Text={
+                        props.canDock
+                            ? "DOCK AVAILABLE"
+                            : string.rep(">", arrowNum) + " DOCKING " + string.rep("<", arrowNum)
+                    }
+                    BackgroundTransparency={1}
+                />
+                <textlabel
+                    Size={new UDim2(1, 0, 0, 18)}
+                    Position={new UDim2(0, 0, 1, -18)}
+                    TextSize={10}
+                    Text={
+                        props.canDock
+                            ? "Docking Time: " + math.ceil(props.dockingTime) + "s"
+                            : math.ceil(props.timeLeft) + "s left"
+                    }
+                    BackgroundTransparency={1}
+                />
+            </frame>
+        </screengui>
+    );
+}
