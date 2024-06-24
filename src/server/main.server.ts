@@ -30,6 +30,7 @@ function onPlayerAdded(player: Player) {
         wait(0.1);
         //Initialize ship class
         const ship = new Ship(
+            W.map,
             W.anchor,
             ++id,
             character,
@@ -40,6 +41,7 @@ function onPlayerAdded(player: Player) {
             2.86,
             200,
             300,
+            5,
             gamePlayer,
         );
         W.addShip(ship);
@@ -58,7 +60,7 @@ function tickShipMovement() {
     while (true) {
         const dt = wait(0.05)[0];
         for (const ship of pairs(W.ships)) {
-            ship[1].TickMovement(dt);
+            ship[1].TickShip(dt);
         }
     }
 }

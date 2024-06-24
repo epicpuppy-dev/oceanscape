@@ -1,5 +1,7 @@
 import { ReplicatedStorage } from "@rbxts/services";
 import { GamePlayer } from "./player";
+import { MapData } from "./map";
+import { isNil } from "./util";
 
 const DRAG = 0.1;
 const TURN_DRAG = 0.05;
@@ -22,9 +24,13 @@ export class Ship {
     model: Model;
     cameraHeading: number = 0;
     cameraFocus: number = 100;
+    docking: boolean = false;
+    dockingTime: number;
+    timeLeft: number;
     player: GamePlayer | undefined;
 
     constructor(
+        map: MapData,
         anchor: Attachment,
         id: number,
         model: Model,
@@ -35,6 +41,7 @@ export class Ship {
         turnSpeed: number,
         armor: number,
         hull: number,
+        dockingTime: number,
         player?: GamePlayer,
     ) {
         this.id = id;
@@ -48,6 +55,8 @@ export class Ship {
         this.maxArmor = armor;
         this.hull = hull;
         this.maxHull = hull;
+        this.dockingTime = dockingTime;
+        this.timeLeft = dockingTime;
         this.player = player;
 
         (this.model.WaitForChild("Hull").WaitForChild("PlaneConstraint") as PlaneConstraint).Attachment0 = anchor;
@@ -65,6 +74,9 @@ export class Ship {
         model.SetAttribute("maxArmor", this.maxArmor);
         model.SetAttribute("hull", this.hull);
         model.SetAttribute("maxHull", this.maxHull);
+        model.SetAttribute("docking", this.docking);
+        model.SetAttribute("dockingTime", this.dockingTime);
+        model.SetAttribute("timeLeft", this.timeLeft);
 
         // Setup remote event for movement updates
         (ReplicatedStorage.WaitForChild("MovementUpdateEvent") as RemoteEvent).OnServerEvent.Connect(
@@ -83,11 +95,16 @@ export class Ship {
                 }
             },
         );
+        (ReplicatedStorage.WaitForChild("DockRequestEvent") as RemoteEvent).OnServerEvent.Connect((player, shipId) => {
+            if (typeIs(shipId, "number") && shipId === this.id) {
+                this.AttemptDock(map);
+            }
+        });
 
         model.PrimaryPart!.CFrame = new CFrame(model.PrimaryPart!.Position.X, 2, model.PrimaryPart!.Position.Z);
     }
 
-    TickMovement(dt: number) {
+    TickShip(dt: number) {
         // Update speed
         this.speed =
             this.speed +
@@ -131,10 +148,16 @@ export class Ship {
             ),
         );
 
+        if (this.docking) {
+            this.timeLeft -= dt;
+        }
+
         // Update model attributes
         this.model.SetAttribute("heading", this.heading);
         this.model.SetAttribute("speed", this.speed);
         this.model.SetAttribute("rudder", this.rudder);
+        this.model.SetAttribute("docking", this.docking);
+        this.model.SetAttribute("timeLeft", this.timeLeft);
     }
 
     DamageShip(damage: number) {
@@ -161,5 +184,17 @@ export class Ship {
 
     DestroyShip() {
         (this.model.WaitForChild("Humanoid") as Humanoid).Health = 0;
+    }
+
+    AttemptDock(map: MapData) {
+        if (this.docking) {
+            this.docking = false;
+            return;
+        }
+        const dockTarget = map.checkDock(this.model.PrimaryPart!.Position.X, this.model.PrimaryPart!.Position.Z, 75);
+        if (dockTarget !== -1) {
+            this.docking = true;
+            this.timeLeft = this.dockingTime;
+        }
     }
 }

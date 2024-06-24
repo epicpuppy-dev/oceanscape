@@ -197,7 +197,7 @@ interface DockIndicatorProps {
 export function DockIndicator(props: DockIndicatorProps) {
     if (!props.canDock && !props.isDocking) return <screengui />;
     const dockingProgress = props.isDocking ? (props.dockingTime - props.timeLeft) / props.dockingTime : 0; // 0-1
-    const arrowNum = math.floor(dockingProgress * 4);
+    const arrowNum = math.floor((props.dockingTime - props.timeLeft) * 2) % 4;
     return (
         <screengui>
             <frame Size={new UDim2(0, 200, 0, 40)} Position={new UDim2(0.5, -100, 0, 100)}>
@@ -211,9 +211,9 @@ export function DockIndicator(props: DockIndicatorProps) {
                     Position={new UDim2(0, 0, 0, 0)}
                     TextSize={16}
                     Text={
-                        props.canDock
-                            ? "DOCK AVAILABLE"
-                            : string.rep(">", arrowNum) + " DOCKING " + string.rep("<", arrowNum)
+                        props.isDocking
+                            ? string.rep(">", arrowNum) + " DOCKING " + string.rep("<", arrowNum)
+                            : "DOCK AVAILABLE"
                     }
                     BackgroundTransparency={1}
                 />
@@ -222,10 +222,11 @@ export function DockIndicator(props: DockIndicatorProps) {
                     Position={new UDim2(0, 0, 1, -18)}
                     TextSize={10}
                     Text={
-                        props.canDock
-                            ? "Docking Time: " + math.ceil(props.dockingTime) + "s"
-                            : math.ceil(props.timeLeft) + "s left"
+                        props.isDocking
+                            ? math.ceil(props.timeLeft) + "s left"
+                            : "Docking Time: " + math.ceil(props.dockingTime) + "s"
                     }
+                    TextColor3={props.inCombat ? Color3.fromRGB(255, 50, 50) : Color3.fromRGB(50, 50, 50)}
                     BackgroundTransparency={1}
                 />
             </frame>

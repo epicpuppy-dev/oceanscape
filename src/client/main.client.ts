@@ -12,6 +12,7 @@ const controls = {
     backward: Enum.KeyCode.S,
     left: Enum.KeyCode.A,
     right: Enum.KeyCode.D,
+    dock: Enum.KeyCode.T,
 };
 
 //Disable player controls
@@ -24,7 +25,7 @@ let targetPower = 0;
 let targetTurn = 0;
 
 const dockingTime = 10;
-let timeLeft = dockingTime + 5;
+const timeLeft = dockingTime + 5;
 
 const hud = {
     speed: Roact.createElement(SpeedDisplay, { speed: 0, targetPower: 0 }),
@@ -33,10 +34,10 @@ const hud = {
     status: Roact.createElement(ShipStatus, { armor: 1, maxArmor: 1, hull: 1, maxHull: 1 }),
     crosshair: Roact.createElement(Crosshair),
     dock: Roact.createElement(DockIndicator, {
-        canDock: true,
+        canDock: false,
         isDocking: false,
-        dockingTime: 5,
-        timeLeft: 5,
+        dockingTime: 1,
+        timeLeft: 1,
         inCombat: false,
     }),
 };
@@ -44,7 +45,6 @@ const ui = Roact.createElement("ScreenGui", {}, hud);
 let gui: Roact.Tree;
 
 function UpdateUI(dt: number) {
-    timeLeft -= dt;
     if (player.state !== PlayerState.Ship || player.shipId === undefined || player.ship === undefined) return;
     if (gui === undefined) return;
     hud.speed = Roact.createElement(
@@ -73,11 +73,12 @@ function UpdateUI(dt: number) {
         hull: player.ship.GetAttribute("hull") as number,
         maxHull: player.ship.GetAttribute("maxHull") as number,
     });
+    const dockTarget = map.checkDock(player.ship.PrimaryPart!.Position.X, player.ship.PrimaryPart!.Position.Z, 75);
     hud.dock = Roact.createElement(DockIndicator, {
-        canDock: false,
-        isDocking: true,
-        dockingTime: dockingTime,
-        timeLeft: math.min(timeLeft, dockingTime),
+        canDock: dockTarget !== -1,
+        isDocking: player.ship.GetAttribute("docking") as boolean,
+        dockingTime: player.ship.GetAttribute("dockingTime") as number,
+        timeLeft: player.ship.GetAttribute("timeLeft") as number,
         inCombat: false,
     });
     gui = Roact.update(gui, Roact.createElement("ScreenGui", {}, hud));
@@ -122,6 +123,9 @@ UIS.InputBegan.Connect((input, chatting) => {
     if (input.KeyCode === controls.right) {
         update = true;
         targetTurn = 1;
+    }
+    if (input.KeyCode === controls.dock) {
+        (ReplicatedStorage.WaitForChild("DockRequestEvent") as RemoteEvent).FireServer(player.shipId);
     }
     if (!update) return;
     (ReplicatedStorage.WaitForChild("MovementUpdateEvent") as RemoteEvent).FireServer(

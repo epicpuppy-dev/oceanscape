@@ -35,6 +35,9 @@
 			"MapUpdateEvent": {
 				"$className": "RemoteEvent"
 			},
+			"DockRequestEvent": {
+				"$className": "RemoteEvent"
+			},
 			"Roact": {
 				"$path": "assets/lib/Roact.rbxm"
 			},

@@ -3,11 +3,13 @@ import { Base } from "./base";
 import { Island } from "./island";
 import { GamePlayer } from "./player";
 import { Ship } from "./ship";
+import { MapData } from "./map";
 
 export class World {
     islands: Island[] = [];
     bases: { [key: string]: Base | undefined } = {};
     ships: { [key: string]: Ship | undefined } = {};
+    map: MapData = new MapData();
     players: { [key: string]: GamePlayer | undefined } = {};
     anchor: Attachment;
 
@@ -16,6 +18,7 @@ export class World {
             this.islands.push(island);
             if (island.base) {
                 this.bases[island.base.id] = island.base;
+                this.map.addBase(island.base.getMapData());
             }
         });
         this.anchor = new Instance("Attachment");
