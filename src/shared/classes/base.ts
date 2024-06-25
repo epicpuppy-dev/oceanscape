@@ -1,6 +1,6 @@
 import { Island } from "./island";
 import { BaseEntry } from "./map";
-import { importModel } from "./util";
+import { importModel } from "../util/util";
 
 export class Base {
     id: number;

@@ -1,7 +1,7 @@
 import { InsertService, ReplicatedStorage } from "@rbxts/services";
 import { GamePlayer } from "./player";
 import { MapData } from "./map";
-import { isNil } from "./util";
+import { isNil } from "../util/util";
 import { World } from "./world";
 import { Turret } from "./turret";
 

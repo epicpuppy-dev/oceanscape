@@ -1,5 +1,5 @@
 import { Base } from "./base";
-import { importModel } from "./util";
+import { importModel } from "../util/util";
 
 export class Island {
     variant: string;

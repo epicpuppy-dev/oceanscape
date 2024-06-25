@@ -1,5 +1,5 @@
 import Roact from "@rbxts/roact";
-import { importModel } from "./util";
+import { importModel } from "../util/util";
 import { World } from "./world";
 import { ReplicatedStorage, Workspace } from "@rbxts/services";
 import { Ship } from "./ship";

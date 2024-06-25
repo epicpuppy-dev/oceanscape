@@ -7,9 +7,9 @@ import {
     UserInputService,
 } from "@rbxts/services";
 import Roact from "@rbxts/roact";
-import { SpeedDisplay, HeadingDisplay, TurnBar, ShipStatus, Crosshair, DockIndicator } from "shared/ship.hud";
-import { GamePlayer, PlayerState } from "shared/player";
-import { BaseEntry, MapData } from "shared/map";
+import { SpeedDisplay, HeadingDisplay, TurnBar, ShipStatus, Crosshair, DockIndicator } from "shared/gui/ship.gui";
+import { GamePlayer, PlayerState } from "shared/classes/player";
+import { BaseEntry, MapData } from "shared/classes/map";
 
 const player = new GamePlayer(Players.LocalPlayer);
 const map = new MapData();

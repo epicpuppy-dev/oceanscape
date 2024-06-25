@@ -1,7 +1,7 @@
 import { Players, Workspace } from "@rbxts/services";
-import { GamePlayer } from "shared/player";
-import { World } from "shared/world";
-import { generateDiscWorld } from "../shared/worldgen";
+import { GamePlayer } from "shared/classes/player";
+import { World } from "shared/classes/world";
+import { generateDiscWorld } from "../shared/util/worldgen";
 
 Players.CharacterAutoLoads = false;
 

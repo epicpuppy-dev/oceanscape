@@ -1,6 +1,6 @@
 import { Workspace } from "@rbxts/services";
-import { discAlgorithm } from "shared/gen";
-import { Island } from "shared/island";
+import { discAlgorithm } from "./gen";
+import { Island } from "shared/classes/island";
 
 let id = 0;
 
