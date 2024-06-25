@@ -17,25 +17,15 @@ generateFolder("Bullets");
 
 const W = new World(generateDiscWorld(1, 6000, 3, [100, 2000, 4000], [0, 75, 40], [1, 3, 5], [100, 1000, 2000]));
 
-let id = 0;
-
 function onPlayerRemoved(player: Player) {
     const gamePlayer = W.players[player.UserId]!;
     const character = player.Character;
-    if (character !== undefined) onCharacterDied(gamePlayer);
-}
-
-function onCharacterDied(player: GamePlayer) {
-    if (player.shipId === undefined) return;
-    const ship = W.ships[player.shipId!];
-    player.player.Character!.WaitForChild("HumanoidRootPart").WaitForChild("Attachment").Destroy();
-    if (ship !== undefined) destroyShip(ship.id);
 }
 
 function onPlayerAdded(player: Player) {
-    const gamePlayer = new GamePlayer(player);
+    const gamePlayer = new GamePlayer(player, W);
     W.addPlayer(gamePlayer);
-    gamePlayer.spawnShip(W, ++id, 18198556467);
+    gamePlayer.spawnShip(18198556467);
     wait(1);
     W.sendMapData(gamePlayer);
 }

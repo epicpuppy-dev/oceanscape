@@ -126,7 +126,9 @@ export class Ship {
                 }
             }
         });
-        model.PrimaryPart!.CFrame = new CFrame(model.PrimaryPart!.Position.X, 2, model.PrimaryPart!.Position.Z);
+
+        // Anchor y level to plane
+        (model.WaitForChild("Hull").WaitForChild("PlaneConstraint") as PlaneConstraint).Attachment0 = anchor;
     }
 
     TickShip(dt: number) {

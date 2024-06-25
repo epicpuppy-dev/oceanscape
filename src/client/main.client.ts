@@ -81,35 +81,42 @@ function UpdateUI(dt: number) {
 
 const UIS = UserInputService;
 UIS.InputBegan.Connect((input, chatting) => {
-    if (chatting || player.ship === undefined || player.shipId === undefined) return;
-    let targetPower = player.ship.GetAttribute("targetPower") as number;
-    let targetTurn = player.ship.GetAttribute("targetTurn") as number;
-    let update = false;
-    if (input.KeyCode === controls.forward) {
-        if (targetPower < 0) targetPower = 0;
-        else targetPower = math.min(targetPower + 0.25, 1);
-        update = true;
+    if (chatting) return;
+    if (player.state === PlayerState.Ship && player.ship !== undefined && player.shipId !== undefined) {
+        let targetPower = player.ship.GetAttribute("targetPower") as number;
+        let targetTurn = player.ship.GetAttribute("targetTurn") as number;
+        let update = false;
+        if (input.KeyCode === controls.forward) {
+            if (targetPower < 0) targetPower = 0;
+            else targetPower = math.min(targetPower + 0.25, 1);
+            update = true;
+        }
+        if (input.KeyCode === controls.backward) {
+            if (targetPower === 0) targetPower = -0.5;
+            else targetPower = math.max(targetPower - 0.25, -0.5);
+            update = true;
+        }
+        if (input.KeyCode === controls.left) {
+            targetTurn = -1;
+            update = true;
+        }
+        if (input.KeyCode === controls.right) {
+            update = true;
+            targetTurn = 1;
+        }
+        if (input.KeyCode === controls.dock) {
+            sendPacketC2S<Packet.DockRequest>("DockRequest", { shipId: player.shipId });
+        }
+        if (!update) return;
+        sendPacketC2S<Packet.MovementUpdate>("MovementUpdate", { shipId: player.shipId, targetPower, targetTurn });
+        player.ship.SetAttribute("targetPower", targetPower);
+        player.ship.SetAttribute("targetTurn", targetTurn);
+    } else if (player.state === PlayerState.Base && player.baseId !== undefined) {
+        if (input.KeyCode === controls.dock) {
+            print("Attempt undock");
+            sendPacketC2S<Packet.UndockRequest>("UndockRequest", { baseId: player.baseId });
+        }
     }
-    if (input.KeyCode === controls.backward) {
-        if (targetPower === 0) targetPower = -0.5;
-        else targetPower = math.max(targetPower - 0.25, -0.5);
-        update = true;
-    }
-    if (input.KeyCode === controls.left) {
-        targetTurn = -1;
-        update = true;
-    }
-    if (input.KeyCode === controls.right) {
-        update = true;
-        targetTurn = 1;
-    }
-    if (input.KeyCode === controls.dock) {
-        sendPacketC2S<Packet.DockRequest>("DockRequest", { shipId: player.shipId });
-    }
-    if (!update) return;
-    sendPacketC2S<Packet.MovementUpdate>("MovementUpdate", { shipId: player.shipId, targetPower, targetTurn });
-    player.ship.SetAttribute("targetPower", targetPower);
-    player.ship.SetAttribute("targetTurn", targetTurn);
 });
 
 UIS.InputEnded.Connect((input, chatting) => {
@@ -139,8 +146,8 @@ listenPacketS2C<Packet.MapUpdate>("MapUpdate", (packet) => {
     }
 });
 
-listenPacketS2C<Packet.DockRequest>("DockRequest", (packet) => {
-    player.dockAtBaseClient(player.gui!);
+listenPacketS2C<Packet.DockConfirm>("DockConfirm", (packet) => {
+    player.dockAtBaseClient(packet.baseId, player.gui!);
 });
 
 listenPacketS2C<Packet.ShipSpawn>("ShipSpawn", (packet) => {
