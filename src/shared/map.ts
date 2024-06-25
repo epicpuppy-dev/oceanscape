@@ -3,7 +3,6 @@ export class MapData {
 
     addBase(base: BaseEntry) {
         this.bases[base.id] = base;
-        print(`Added base ${base.id} at ${base.dockX}, ${base.dockZ}`);
     }
 
     checkDock(x: number, z: number, range: number) {

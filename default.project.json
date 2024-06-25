@@ -55,9 +55,6 @@
 				"TS": {
 					"$path": "out/client"
 				}
-			},
-			"StarterCharacter": {
-				"$path": "assets/models/StarterShip.rbxm"
 			}
 		},
 		"Workspace": {

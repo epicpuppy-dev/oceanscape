@@ -40,7 +40,6 @@ const ui = Roact.createElement("ScreenGui", {}, hud);
 
 function UpdateUI(dt: number) {
     if (player.state !== PlayerState.Ship || player.shipId === undefined || player.ship === undefined) return;
-    print(player.state);
     if (player.gui === undefined) return;
     hud.speed = Roact.createElement(
         SpeedDisplay,
@@ -155,5 +154,4 @@ StarterGui.SetCoreGuiEnabled(Enum.CoreGuiType.Backpack, false);
 
 (ReplicatedStorage.WaitForChild("ShipSpawnEvent") as RemoteEvent).OnClientEvent.Connect(() => {
     player.addShipClient(player.player.Character!, ui);
-    print("Ship spawned");
 });

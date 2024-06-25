@@ -1,12 +1,11 @@
 import { Players, Workspace } from "@rbxts/services";
 import { GamePlayer } from "shared/player";
-import { Ship } from "shared/ship";
 import { World } from "shared/world";
 import { generateDiscWorld } from "../shared/worldgen";
 
 Players.CharacterAutoLoads = false;
 
-const W = new World(generateDiscWorld(0, 6000, 3, [100, 2000, 4000], [0, 75, 40], [1, 3, 5], [100, 1000, 2000]));
+const W = new World(generateDiscWorld(1, 6000, 3, [100, 2000, 4000], [0, 75, 40], [1, 3, 5], [100, 1000, 2000]));
 
 let id = 0;
 

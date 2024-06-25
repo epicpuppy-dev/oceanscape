@@ -36,12 +36,14 @@ export class GamePlayer {
         ship.SetAttribute("CameraFocus", 100);
     }
 
-    spawnShip(world: World, shipId: number, modelId: number) {
+    spawnShip(world: World, shipId: number, modelId: number, x?: number, z?: number, heading?: number) {
         const ship = importModel(modelId);
         ship.Name = this.player.Name;
         ship.Parent = Workspace;
+        let posCFrame = new CFrame(0, 2, 0);
+        if (x !== undefined && z !== undefined) posCFrame = new CFrame(x, 2, z);
+        if (heading !== undefined) posCFrame = posCFrame.mul(CFrame.Angles(0, math.rad(heading), 0));
         this.player.Character = ship;
-        print("Init ship class");
         //Initialize ship class
         const shipClass = new Ship(
             world.map,
@@ -49,7 +51,7 @@ export class GamePlayer {
             world.anchor,
             shipId,
             ship,
-            ship.PrimaryPart!.CFrame.LookVector.Y,
+            ship.PrimaryPart!.Orientation.Y,
             32,
             2.86,
             2,
@@ -61,8 +63,8 @@ export class GamePlayer {
         );
         this.addShip(ship);
         world.addShip(shipClass);
-        print("Firing ship spawn event");
         (ReplicatedStorage.WaitForChild("ShipSpawnEvent") as RemoteEvent).FireClient(this.player, shipId);
+        print("[INFO] Ship spawned for player " + this.player.Name);
     }
 
     removeShip() {
