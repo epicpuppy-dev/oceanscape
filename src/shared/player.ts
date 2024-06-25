@@ -58,6 +58,7 @@ export class GamePlayer {
             2.86,
             200,
             300,
+            6,
             5,
             this,
         );

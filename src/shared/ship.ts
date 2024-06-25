@@ -63,6 +63,9 @@ export class Ship {
         this.maxArmor = armor;
         this.hull = hull;
         this.maxHull = hull;
+        this.dockingTime = dockingTime;
+        this.timeLeft = dockingTime;
+        this.player = player;
 
         for (let i = 0; i < turrets; i++) {
             const attachment = this.model.WaitForChild("Hardpoints").WaitForChild("Turret" + i) as Attachment;
