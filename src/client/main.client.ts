@@ -1,4 +1,11 @@
-import { Players, ReplicatedStorage, RunService, StarterGui, UserInputService } from "@rbxts/services";
+import {
+    ContextActionService,
+    Players,
+    ReplicatedStorage,
+    RunService,
+    StarterGui,
+    UserInputService,
+} from "@rbxts/services";
 import Roact from "@rbxts/roact";
 import { SpeedDisplay, HeadingDisplay, TurnBar, ShipStatus, Crosshair } from "shared/ship.hud";
 import { GamePlayer, PlayerState } from "shared/player";
@@ -134,3 +141,11 @@ RunService.Heartbeat.Connect(UpdateUI);
 
 StarterGui.SetCoreGuiEnabled(Enum.CoreGuiType.Health, false);
 StarterGui.SetCoreGuiEnabled(Enum.CoreGuiType.Backpack, false);
+ContextActionService.BindAction(
+    "FireInput",
+    () => {
+        (ReplicatedStorage.WaitForChild("WeaponFireEvent") as RemoteEvent).FireServer(player.shipId);
+    },
+    false,
+    Enum.UserInputType.MouseButton1,
+);

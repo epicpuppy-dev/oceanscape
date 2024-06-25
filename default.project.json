@@ -29,6 +29,9 @@
 			"CameraUpdateEvent": {
 				"$className": "RemoteEvent"
 			},
+			"WeaponFireEvent": {
+				"$className": "RemoteEvent"
+			},
 			"Roact": {
 				"$path": "assets/lib/Roact.rbxm"
 			},
@@ -45,7 +48,7 @@
 				}
 			},
 			"StarterCharacter": {
-				"$path": "assets/models/StarterShip.rbxm"
+				"$path": "assets/models/Wave.rbxm"
 			}
 		},
 		"Workspace": {
