@@ -4,6 +4,8 @@ import { Ship } from "shared/ship";
 import { World } from "shared/world";
 import { generateDiscWorld } from "../shared/worldgen";
 
+Players.CharacterAutoLoads = false;
+
 const W = new World(generateDiscWorld(0, 6000, 3, [100, 2000, 4000], [0, 75, 40], [1, 3, 5], [100, 1000, 2000]));
 
 let id = 0;
@@ -24,33 +26,7 @@ function onCharacterDied(player: GamePlayer) {
 function onPlayerAdded(player: Player) {
     const gamePlayer = new GamePlayer(player);
     W.addPlayer(gamePlayer);
-    function characterAdded(character: Model) {
-        //Disable player animations
-        character.WaitForChild("Animate").Destroy();
-        wait(0.1);
-        //Initialize ship class
-        const ship = new Ship(
-            W.map,
-            W.anchor,
-            ++id,
-            character,
-            character.PrimaryPart!.CFrame.LookVector.Y,
-            32,
-            2.86,
-            2,
-            2.86,
-            200,
-            300,
-            5,
-            gamePlayer,
-        );
-        W.addShip(ship);
-        (player.Character!.WaitForChild("Humanoid") as Humanoid).Died.Connect(() =>
-            onCharacterDied(W.players[player.UserId]!),
-        );
-    }
-    player.CharacterAdded.Connect(characterAdded);
-    if (player.Character !== undefined) characterAdded(player.Character);
+    gamePlayer.spawnShip(W, ++id, 18198556467);
     wait(1);
     W.sendMapData(gamePlayer);
 }

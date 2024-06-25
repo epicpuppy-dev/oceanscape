@@ -2,6 +2,7 @@ import { ReplicatedStorage } from "@rbxts/services";
 import { GamePlayer } from "./player";
 import { MapData } from "./map";
 import { isNil } from "./util";
+import { World } from "./world";
 
 const DRAG = 0.1;
 const TURN_DRAG = 0.05;
@@ -26,11 +27,14 @@ export class Ship {
     cameraFocus: number = 100;
     docking: boolean = false;
     dockingTime: number;
+    dockingAt: number | undefined;
     timeLeft: number;
+    world: World;
     player: GamePlayer | undefined;
 
     constructor(
         map: MapData,
+        world: World,
         anchor: Attachment,
         id: number,
         model: Model,
@@ -44,6 +48,7 @@ export class Ship {
         dockingTime: number,
         player?: GamePlayer,
     ) {
+        this.world = world;
         this.id = id;
         this.model = model;
         this.heading = heading % 360;
@@ -77,6 +82,8 @@ export class Ship {
         model.SetAttribute("docking", this.docking);
         model.SetAttribute("dockingTime", this.dockingTime);
         model.SetAttribute("timeLeft", this.timeLeft);
+        model.SetAttribute("targetPower", 0);
+        model.SetAttribute("targetTurn", 0);
 
         // Setup remote event for movement updates
         (ReplicatedStorage.WaitForChild("MovementUpdateEvent") as RemoteEvent).OnServerEvent.Connect(
@@ -150,6 +157,9 @@ export class Ship {
 
         if (this.docking) {
             this.timeLeft -= dt;
+            if (this.timeLeft <= 0) {
+                this.player!.dockAtBase(this.world, this.dockingAt!);
+            }
         }
 
         // Update model attributes
@@ -189,11 +199,13 @@ export class Ship {
     AttemptDock(map: MapData) {
         if (this.docking) {
             this.docking = false;
+            this.dockingAt = undefined;
             return;
         }
         const dockTarget = map.checkDock(this.model.PrimaryPart!.Position.X, this.model.PrimaryPart!.Position.Z, 75);
         if (dockTarget !== -1) {
             this.docking = true;
+            this.dockingAt = dockTarget;
             this.timeLeft = this.dockingTime;
         }
     }

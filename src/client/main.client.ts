@@ -21,12 +21,6 @@ const module = require(
 ) as PlayerModule;
 module.GetControls().Disable();
 
-let targetPower = 0;
-let targetTurn = 0;
-
-const dockingTime = 10;
-const timeLeft = dockingTime + 5;
-
 const hud = {
     speed: Roact.createElement(SpeedDisplay, { speed: 0, targetPower: 0 }),
     heading: Roact.createElement(HeadingDisplay, { heading: 0 }),
@@ -41,12 +35,13 @@ const hud = {
         inCombat: false,
     }),
 };
+
 const ui = Roact.createElement("ScreenGui", {}, hud);
-let gui: Roact.Tree;
 
 function UpdateUI(dt: number) {
     if (player.state !== PlayerState.Ship || player.shipId === undefined || player.ship === undefined) return;
-    if (gui === undefined) return;
+    print(player.state);
+    if (player.gui === undefined) return;
     hud.speed = Roact.createElement(
         SpeedDisplay,
         {
@@ -81,30 +76,14 @@ function UpdateUI(dt: number) {
         timeLeft: player.ship.GetAttribute("timeLeft") as number,
         inCombat: false,
     });
-    gui = Roact.update(gui, Roact.createElement("ScreenGui", {}, hud));
+    player.gui = Roact.update(player.gui, Roact.createElement("ScreenGui", {}, hud));
 }
-
-player.player.CharacterAdded.Connect((character) => {
-    //Setup ship
-    targetPower = 0;
-    targetTurn = 0;
-    player.addShip(character);
-    player.state = PlayerState.Ship;
-
-    //Enable GUI
-    gui = Roact.mount(ui, player.player.WaitForChild("PlayerGui"));
-
-    if (player.ship === undefined) return;
-    (player.ship.WaitForChild("Humanoid") as Humanoid).Died.Connect(() => {
-        player.removeShip();
-        player.state = PlayerState.Dead;
-        Roact.unmount(gui);
-    });
-});
 
 const UIS = UserInputService;
 UIS.InputBegan.Connect((input, chatting) => {
     if (chatting || player.ship === undefined || player.shipId === undefined) return;
+    let targetPower = player.ship.GetAttribute("targetPower") as number;
+    let targetTurn = player.ship.GetAttribute("targetTurn") as number;
     let update = false;
     if (input.KeyCode === controls.forward) {
         if (targetPower < 0) targetPower = 0;
@@ -139,6 +118,8 @@ UIS.InputBegan.Connect((input, chatting) => {
 
 UIS.InputEnded.Connect((input, chatting) => {
     if (chatting || player.ship === undefined || player.shipId === undefined) return;
+    const targetPower = player.ship.GetAttribute("targetPower") as number;
+    let targetTurn = player.ship.GetAttribute("targetTurn") as number;
     let update = false;
     if (input.KeyCode === controls.left || input.KeyCode === controls.right) {
         targetTurn = 0;
@@ -167,3 +148,12 @@ StarterGui.SetCoreGuiEnabled(Enum.CoreGuiType.Backpack, false);
         }
     },
 );
+
+(ReplicatedStorage.WaitForChild("DockRequestEvent") as RemoteEvent).OnClientEvent.Connect(() => {
+    player.dockAtBaseClient(player.gui!);
+});
+
+(ReplicatedStorage.WaitForChild("ShipSpawnEvent") as RemoteEvent).OnClientEvent.Connect(() => {
+    player.addShipClient(player.player.Character!, ui);
+    print("Ship spawned");
+});

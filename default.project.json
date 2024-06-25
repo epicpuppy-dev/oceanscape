@@ -38,6 +38,9 @@
 			"DockRequestEvent": {
 				"$className": "RemoteEvent"
 			},
+			"ShipSpawnEvent": {
+				"$className": "RemoteEvent"
+			},
 			"Roact": {
 				"$path": "assets/lib/Roact.rbxm"
 			},
