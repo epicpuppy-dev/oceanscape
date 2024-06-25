@@ -1,8 +1,9 @@
-import { ReplicatedStorage } from "@rbxts/services";
+import { InsertService, ReplicatedStorage } from "@rbxts/services";
 import { GamePlayer } from "./player";
 import { MapData } from "./map";
 import { isNil } from "./util";
 import { World } from "./world";
+import { Turret } from "./turret";
 
 const DRAG = 0.1;
 const TURN_DRAG = 0.05;
@@ -31,6 +32,7 @@ export class Ship {
     timeLeft: number;
     world: World;
     player: GamePlayer | undefined;
+    turrets: Turret[] = [];
 
     constructor(
         map: MapData,
@@ -45,6 +47,7 @@ export class Ship {
         turnSpeed: number,
         armor: number,
         hull: number,
+        turrets: number,
         dockingTime: number,
         player?: GamePlayer,
     ) {
@@ -60,12 +63,23 @@ export class Ship {
         this.maxArmor = armor;
         this.hull = hull;
         this.maxHull = hull;
-        this.dockingTime = dockingTime;
-        this.timeLeft = dockingTime;
-        this.player = player;
 
-        (this.model.WaitForChild("Hull").WaitForChild("PlaneConstraint") as PlaneConstraint).Attachment0 = anchor;
-
+        for (let i = 0; i < turrets; i++) {
+            const attachment = this.model.WaitForChild("Hardpoints").WaitForChild("Turret" + i) as Attachment;
+            const turret = new Turret(
+                20, //dmg
+                10, //reload
+                5.8, //range
+                90, //rotation
+                0, //heading
+                0, //angle
+                51.26, //velocity
+                18111406054, //model
+                this,
+                attachment,
+            );
+            this.turrets.push(turret);
+        }
         // Set all attributes to pass to client
         model.SetAttribute("id", this.id);
         model.SetAttribute("heading", this.heading);
@@ -94,7 +108,7 @@ export class Ship {
                 }
             },
         );
-        (ReplicatedStorage.WaitForChild("MovementUpdateEvent") as RemoteEvent).OnServerEvent.Connect(
+        (ReplicatedStorage.WaitForChild("CameraUpdateEvent") as RemoteEvent).OnServerEvent.Connect(
             (player, shipId, cameraHeading, cameraFocus) => {
                 if (typeIs(shipId, "number") && shipId === this.id) {
                     if (typeIs(cameraHeading, "number")) this.cameraHeading = cameraHeading;
@@ -107,7 +121,13 @@ export class Ship {
                 this.AttemptDock(map);
             }
         });
-
+        (ReplicatedStorage.WaitForChild("WeaponFireEvent") as RemoteEvent).OnServerEvent.Connect((player, shipId) => {
+            if (typeIs(shipId, "number") && shipId === this.id) {
+                for (const turret of this.turrets) {
+                    turret.FireTurret();
+                }
+            }
+        });
         model.PrimaryPart!.CFrame = new CFrame(model.PrimaryPart!.Position.X, 2, model.PrimaryPart!.Position.Z);
     }
 
@@ -168,6 +188,9 @@ export class Ship {
         this.model.SetAttribute("rudder", this.rudder);
         this.model.SetAttribute("docking", this.docking);
         this.model.SetAttribute("timeLeft", this.timeLeft);
+        for (const turret of this.turrets) {
+            turret.TickTurret(dt);
+        }
     }
 
     DamageShip(damage: number) {
