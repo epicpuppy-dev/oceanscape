@@ -10,6 +10,7 @@ export class World {
     islands: Island[] = [];
     bases: { [key: string]: Base | undefined } = {};
     ships: { [key: string]: Ship | undefined } = {};
+    nextShipId: number = 0;
     map: MapData = new MapData();
     players: { [key: string]: GamePlayer | undefined } = {};
     anchor: Attachment;
@@ -48,7 +49,7 @@ export class World {
             if (base[1] !== undefined) {
                 // send base data
                 const data = base[1].getMapData();
-                sendPacketS2C(player.player, "base", data);
+                sendPacketS2C<Packet.MapUpdate>(player.player, "MapUpdate", { property: "base", data });
             }
         }
     }

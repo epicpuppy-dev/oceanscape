@@ -213,7 +213,7 @@ export function DockIndicator(props: DockIndicatorProps) {
                     Text={
                         props.isDocking
                             ? string.rep(">", arrowNum) + " DOCKING " + string.rep("<", arrowNum)
-                            : "DOCK AVAILABLE"
+                            : "DOCK READY"
                     }
                     BackgroundTransparency={1}
                 />

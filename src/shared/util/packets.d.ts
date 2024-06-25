@@ -16,6 +16,12 @@ declare namespace Packet {
     type DockRequest = {
         shipId: number;
     };
+    type DockConfirm = {
+        baseId: number;
+    };
+    type UndockRequest = {
+        baseId: number;
+    };
     type ShipSpawn = {
         shipId: number;
     };
