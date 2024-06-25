@@ -1,10 +1,10 @@
 name: Deploy to Testing Server
 
 on:
-  - push:
+  push:
     branches:
     - master
-  - workflow_dispatch
+  workflow_dispatch:
 
 jobs:
   deploy:

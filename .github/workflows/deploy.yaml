@@ -1,10 +1,10 @@
 name: Deploy to Production
 
 on:
-  - push:
+  push:
     tags:
     - '*'
-  - workflow_dispatch
+  workflow_dispatch:
 
 jobs:
   deploy:
