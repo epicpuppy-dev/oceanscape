@@ -5,6 +5,16 @@ import { generateDiscWorld } from "../shared/util/worldgen";
 
 Players.CharacterAutoLoads = false;
 
+function generateFolder(name: string) {
+    const folder = new Instance("Folder");
+    folder.Name = name;
+    folder.Parent = Workspace;
+    return folder;
+}
+
+generateFolder("Islands");
+generateFolder("Bullets");
+
 const W = new World(generateDiscWorld(1, 6000, 3, [100, 2000, 4000], [0, 75, 40], [1, 3, 5], [100, 1000, 2000]));
 
 let id = 0;
@@ -48,6 +58,7 @@ function destroyShip(shipId: number) {
 for (const player of Players.GetPlayers()) {
     onPlayerAdded(player);
 }
+
 Players.PlayerAdded.Connect(onPlayerAdded);
 Players.PlayerRemoving.Connect(onPlayerRemoved);
 

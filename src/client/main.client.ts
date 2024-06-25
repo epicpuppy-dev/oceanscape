@@ -1,11 +1,4 @@
-import {
-    ContextActionService,
-    Players,
-    ReplicatedStorage,
-    RunService,
-    StarterGui,
-    UserInputService,
-} from "@rbxts/services";
+import { ContextActionService, Players, RunService, StarterGui, UserInputService } from "@rbxts/services";
 import Roact from "@rbxts/roact";
 import { SpeedDisplay, HeadingDisplay, TurnBar, ShipStatus, Crosshair, DockIndicator } from "shared/gui/ship.gui";
 import { GamePlayer, PlayerState } from "shared/classes/player";
@@ -111,10 +104,10 @@ UIS.InputBegan.Connect((input, chatting) => {
         targetTurn = 1;
     }
     if (input.KeyCode === controls.dock) {
-        sendPacketC2S("DockRequest", player.shipId);
+        sendPacketC2S<Packet.DockRequest>("DockRequest", { shipId: player.shipId });
     }
     if (!update) return;
-    sendPacketC2S("MovementUpdate", player.shipId, targetPower, targetTurn);
+    sendPacketC2S<Packet.MovementUpdate>("MovementUpdate", { shipId: player.shipId, targetPower, targetTurn });
     player.ship.SetAttribute("targetPower", targetPower);
     player.ship.SetAttribute("targetTurn", targetTurn);
 });
@@ -129,7 +122,7 @@ UIS.InputEnded.Connect((input, chatting) => {
         update = true;
     }
     if (!update) return;
-    sendPacketC2S("MovementUpdate", player.shipId, targetPower, targetTurn);
+    sendPacketC2S<Packet.MovementUpdate>("MovementUpdate", { shipId: player.shipId, targetPower, targetTurn });
     player.ship.SetAttribute("targetPower", targetPower);
     player.ship.SetAttribute("targetTurn", targetTurn);
 });
@@ -139,24 +132,25 @@ RunService.Heartbeat.Connect(UpdateUI);
 StarterGui.SetCoreGuiEnabled(Enum.CoreGuiType.Health, false);
 StarterGui.SetCoreGuiEnabled(Enum.CoreGuiType.Backpack, false);
 
-listenPacketS2C("MapUpdate", (property: string, data: { [key: string]: string | number | boolean }) => {
-    if (property === "base") {
-        const base = data as BaseEntry;
+listenPacketS2C<Packet.MapUpdate>("MapUpdate", (packet) => {
+    if (packet.property === "base") {
+        const base = packet.data as BaseEntry;
         map.addBase(base);
     }
 });
 
-listenPacketS2C("DockRequest", () => {
+listenPacketS2C<Packet.DockRequest>("DockRequest", (packet) => {
     player.dockAtBaseClient(player.gui!);
 });
 
-listenPacketS2C("ShipSpawn", () => {
+listenPacketS2C<Packet.ShipSpawn>("ShipSpawn", (packet) => {
     player.addShipClient(player.player.Character!, ui);
 });
 ContextActionService.BindAction(
     "FireInput",
     () => {
-        sendPacketC2S("WeaponFire", player.shipId);
+        if (player.shipId === undefined) return;
+        sendPacketC2S<Packet.WeaponFire>("WeaponFire", { shipId: player.shipId });
     },
     false,
     Enum.UserInputType.MouseButton1,

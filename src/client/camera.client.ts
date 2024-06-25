@@ -75,5 +75,5 @@ player.CharacterAdded.Connect((character) => {
 
 function sendCameraUpdate() {
     const shipId = player.Character!.GetAttribute("id") as number;
-    sendPacketC2S("CameraUpdate", shipId, cameraHeading, cameraFocus);
+    sendPacketC2S<Packet.CameraUpdate>("CameraUpdate", { shipId, cameraHeading, cameraFocus });
 }

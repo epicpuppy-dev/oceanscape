@@ -30,7 +30,16 @@
 				"$path": "assets/lib/Roact.rbxm"
 			},
 			"TS": {
-				"$path": "out/shared"
+				"$className": "Folder",
+				"Classes": {
+					"$path": "out/shared/classes"
+				},
+				"Gui": {
+					"$path": "out/shared/gui"
+				},
+				"Util": {
+					"$path": "out/shared/util"
+				}
 			}
 		},
 		"StarterPlayer": {

@@ -65,7 +65,7 @@ export class GamePlayer {
         );
         this.addShip(ship);
         world.addShip(shipClass);
-        sendPacketS2C(this.player, "ShipSpawned", shipId);
+        sendPacketS2C<Packet.ShipSpawn>(this.player, "ShipSpawn", { shipId });
         print("[INFO] Ship spawned for player " + this.player.Name);
     }
 
@@ -80,7 +80,8 @@ export class GamePlayer {
         const base = world.bases[baseId];
         if (base === undefined) return;
         // Remove player ship and add player to base
-        sendPacketS2C(this.player, "DockRequest", this.shipId);
+        if (this.ship === undefined || this.shipId === undefined) return;
+        sendPacketS2C<Packet.DockRequest>(this.player, "DockRequest", { shipId: this.shipId });
         this.removeShip();
         this.state = PlayerState.Base;
         const newPlayer = importModel(18198568965);

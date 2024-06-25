@@ -23,7 +23,6 @@
 		"plugin:prettier/recommended"
 	],
 	"rules": {
-		"prettier/prettier": "warn",
-		"@typescript-eslint/no-explicit-any": "off"
+		"prettier/prettier": "warn"
 	}
 }

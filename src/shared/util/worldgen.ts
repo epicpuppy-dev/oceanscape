@@ -12,9 +12,7 @@ function generateIsland(parent: Instance, x: number, y: number) {
 
 function generateWorld(bases: [number, number][]) {
     const islandList: Island[] = [];
-    const folder = new Instance("Folder");
-    folder.Name = "Islands";
-    folder.Parent = Workspace;
+    const folder = Workspace.WaitForChild("Islands");
     // Always ensure that an island is generated nearby the origin
     for (let i = 0; i < bases.size(); i++) {
         islandList.push(generateIsland(folder, bases[i][0], bases[i][1]));

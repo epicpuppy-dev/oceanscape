@@ -1,7 +1,5 @@
-import { InsertService, ReplicatedStorage } from "@rbxts/services";
 import { GamePlayer } from "./player";
 import { MapData } from "./map";
-import { isNil } from "../util/util";
 import { World } from "./world";
 import { Turret } from "./turret";
 import { listenPacketC2S } from "shared/util/network";
@@ -104,25 +102,25 @@ export class Ship {
         model.SetAttribute("targetTurn", 0);
 
         // Setup remote event for movement updates
-        listenPacketC2S("MovementUpdate", (player, shipId, targetPower, targetTurn) => {
-            if (typeIs(shipId, "number") && shipId === this.id) {
-                if (typeIs(targetPower, "number")) this.targetPower = targetPower;
-                if (typeIs(targetTurn, "number")) this.targetTurn = targetTurn;
+        listenPacketC2S<Packet.MovementUpdate>("MovementUpdate", (player, packet) => {
+            if (typeIs(packet.shipId, "number") && packet.shipId === this.id) {
+                if (typeIs(packet.targetPower, "number")) this.targetPower = packet.targetPower;
+                if (typeIs(packet.targetTurn, "number")) this.targetTurn = packet.targetTurn;
             }
         });
-        listenPacketC2S("CameraUpdate", (player, shipId, cameraHeading, cameraFocus) => {
-            if (typeIs(shipId, "number") && shipId === this.id) {
-                if (typeIs(cameraHeading, "number")) this.cameraHeading = cameraHeading;
-                if (typeIs(cameraFocus, "number")) this.cameraFocus = cameraFocus;
+        listenPacketC2S<Packet.CameraUpdate>("CameraUpdate", (player, packet) => {
+            if (typeIs(packet.shipId, "number") && packet.shipId === this.id) {
+                if (typeIs(packet.cameraHeading, "number")) this.cameraHeading = packet.cameraHeading;
+                if (typeIs(packet.cameraFocus, "number")) this.cameraFocus = packet.cameraFocus;
             }
         });
-        listenPacketC2S("DockRequest", (player, shipId) => {
-            if (typeIs(shipId, "number") && shipId === this.id) {
+        listenPacketC2S<Packet.DockRequest>("DockRequest", (player, packet) => {
+            if (typeIs(packet.shipId, "number") && packet.shipId === this.id) {
                 this.AttemptDock(map);
             }
         });
-        listenPacketC2S("WeaponFire", (player, shipId) => {
-            if (typeIs(shipId, "number") && shipId === this.id) {
+        listenPacketC2S<Packet.WeaponFire>("WeaponFire", (player, packet) => {
+            if (typeIs(packet.shipId, "number") && packet.shipId === this.id) {
                 for (const turret of this.turrets) {
                     turret.FireTurret();
                 }

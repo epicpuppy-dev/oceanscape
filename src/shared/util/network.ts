@@ -2,26 +2,27 @@ import { ReplicatedStorage } from "@rbxts/services";
 
 const event = ReplicatedStorage.WaitForChild("PacketEvent") as RemoteEvent;
 
-export function sendPacketC2S(packet: string, ...args: unknown[]) {
-    event.FireServer(packet, ...args);
+export function sendPacketC2S<T>(name: string, packet: T) {
+    event.FireServer(name, packet);
 }
 
-export function sendPacketS2C(player: Player, packet: string, ...args: unknown[]) {
-    event.FireClient(player, packet, ...args);
+export function sendPacketS2C<T>(player: Player, name: string, packet: T) {
+    event.FireClient(player, name, packet);
 }
 
-export function listenPacketC2S(packet: string, callback: (player: Player, ...args: any[]) => void) {
-    event.OnServerEvent.Connect((player, p, ...args) => {
-        if (p === packet) {
-            callback(player, ...args);
+export function listenPacketC2S<T>(packet: string, callback: (player: Player, packet: T) => void) {
+    event.OnServerEvent.Connect((player: Player, ...args: unknown[]) => {
+        const [name, data] = args;
+        if (name === packet) {
+            callback(player, data as T);
         }
     });
 }
 
-export function listenPacketS2C(packet: string, callback: (...args: any[]) => void) {
-    event.OnClientEvent.Connect((p, ...args) => {
-        if (p === packet) {
-            callback(...args);
+export function listenPacketS2C<T>(packet: string, callback: (packet: T) => void) {
+    event.OnClientEvent.Connect((name: string, data: T) => {
+        if (name === packet) {
+            callback(data);
         }
     });
 }
