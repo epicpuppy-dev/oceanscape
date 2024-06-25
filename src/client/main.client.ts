@@ -10,6 +10,7 @@ import Roact from "@rbxts/roact";
 import { SpeedDisplay, HeadingDisplay, TurnBar, ShipStatus, Crosshair, DockIndicator } from "shared/gui/ship.gui";
 import { GamePlayer, PlayerState } from "shared/classes/player";
 import { BaseEntry, MapData } from "shared/classes/map";
+import { listenPacketS2C, sendPacketC2S } from "shared/util/network";
 
 const player = new GamePlayer(Players.LocalPlayer);
 const map = new MapData();
@@ -110,14 +111,10 @@ UIS.InputBegan.Connect((input, chatting) => {
         targetTurn = 1;
     }
     if (input.KeyCode === controls.dock) {
-        (ReplicatedStorage.WaitForChild("DockRequestEvent") as RemoteEvent).FireServer(player.shipId);
+        sendPacketC2S("DockRequest", player.shipId);
     }
     if (!update) return;
-    (ReplicatedStorage.WaitForChild("MovementUpdateEvent") as RemoteEvent).FireServer(
-        player.shipId,
-        targetPower,
-        targetTurn,
-    );
+    sendPacketC2S("MovementUpdate", player.shipId, targetPower, targetTurn);
     player.ship.SetAttribute("targetPower", targetPower);
     player.ship.SetAttribute("targetTurn", targetTurn);
 });
@@ -132,11 +129,7 @@ UIS.InputEnded.Connect((input, chatting) => {
         update = true;
     }
     if (!update) return;
-    (ReplicatedStorage.WaitForChild("MovementUpdateEvent") as RemoteEvent).FireServer(
-        player.shipId,
-        targetPower,
-        targetTurn,
-    );
+    sendPacketC2S("MovementUpdate", player.shipId, targetPower, targetTurn);
     player.ship.SetAttribute("targetPower", targetPower);
     player.ship.SetAttribute("targetTurn", targetTurn);
 });
@@ -146,26 +139,24 @@ RunService.Heartbeat.Connect(UpdateUI);
 StarterGui.SetCoreGuiEnabled(Enum.CoreGuiType.Health, false);
 StarterGui.SetCoreGuiEnabled(Enum.CoreGuiType.Backpack, false);
 
-(ReplicatedStorage.WaitForChild("MapUpdateEvent") as RemoteEvent).OnClientEvent.Connect(
-    (property: string, data: { [key: string]: string | number | boolean }) => {
-        if (property === "base") {
-            const base = data as BaseEntry;
-            map.addBase(base);
-        }
-    },
-);
+listenPacketS2C("MapUpdate", (property: string, data: { [key: string]: string | number | boolean }) => {
+    if (property === "base") {
+        const base = data as BaseEntry;
+        map.addBase(base);
+    }
+});
 
-(ReplicatedStorage.WaitForChild("DockRequestEvent") as RemoteEvent).OnClientEvent.Connect(() => {
+listenPacketS2C("DockRequest", () => {
     player.dockAtBaseClient(player.gui!);
 });
 
-(ReplicatedStorage.WaitForChild("ShipSpawnEvent") as RemoteEvent).OnClientEvent.Connect(() => {
+listenPacketS2C("ShipSpawn", () => {
     player.addShipClient(player.player.Character!, ui);
 });
 ContextActionService.BindAction(
     "FireInput",
     () => {
-        (ReplicatedStorage.WaitForChild("WeaponFireEvent") as RemoteEvent).FireServer(player.shipId);
+        sendPacketC2S("WeaponFire", player.shipId);
     },
     false,
     Enum.UserInputType.MouseButton1,

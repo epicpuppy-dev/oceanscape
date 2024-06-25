@@ -6,6 +6,7 @@ import {
     UserInputService,
     Workspace,
 } from "@rbxts/services";
+import { sendPacketC2S } from "shared/util/network";
 
 // Adapted from https://devforum.roblox.com/t/help-making-camera-follow-mouse/2188908/11
 const camera = Workspace.CurrentCamera!;
@@ -74,5 +75,5 @@ player.CharacterAdded.Connect((character) => {
 
 function sendCameraUpdate() {
     const shipId = player.Character!.GetAttribute("id") as number;
-    (ReplicatedStorage.WaitForChild("CameraUpdateEvent") as RemoteEvent).FireServer(shipId, cameraHeading, cameraFocus);
+    sendPacketC2S("CameraUpdate", shipId, cameraHeading, cameraFocus);
 }

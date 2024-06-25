@@ -23,25 +23,7 @@
 					}
 				}
 			},
-			"MovementUpdateEvent": {
-				"$className": "RemoteEvent"
-			},
-			"CameraUpdateEvent": {
-				"$className": "RemoteEvent"
-			},
-			"BaseInfoEvent": {
-				"$className": "RemoteEvent"
-			},
-			"MapUpdateEvent": {
-				"$className": "RemoteEvent"
-			},
-			"DockRequestEvent": {
-				"$className": "RemoteEvent"
-			},
-			"ShipSpawnEvent": {
-				"$className": "RemoteEvent"
-			},
-			"WeaponFireEvent": {
+			"PacketEvent": {
 				"$className": "RemoteEvent"
 			},
 			"Roact": {

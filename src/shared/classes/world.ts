@@ -4,6 +4,7 @@ import { Island } from "./island";
 import { GamePlayer } from "./player";
 import { Ship } from "./ship";
 import { MapData } from "./map";
+import { sendPacketS2C } from "shared/util/network";
 
 export class World {
     islands: Island[] = [];
@@ -42,13 +43,12 @@ export class World {
     }
 
     sendMapData(player: GamePlayer) {
-        const sendEvent = ReplicatedStorage.WaitForChild("MapUpdateEvent") as RemoteEvent;
         // send all bases
         for (const base of pairs(this.bases)) {
             if (base[1] !== undefined) {
                 // send base data
                 const data = base[1].getMapData();
-                sendEvent.FireClient(player.player, "base", data);
+                sendPacketS2C(player.player, "base", data);
             }
         }
     }

@@ -3,6 +3,7 @@ import { importModel } from "../util/util";
 import { World } from "./world";
 import { ReplicatedStorage, Workspace } from "@rbxts/services";
 import { Ship } from "./ship";
+import { sendPacketS2C } from "shared/util/network";
 
 export class GamePlayer {
     id: number;
@@ -64,7 +65,7 @@ export class GamePlayer {
         );
         this.addShip(ship);
         world.addShip(shipClass);
-        (ReplicatedStorage.WaitForChild("ShipSpawnEvent") as RemoteEvent).FireClient(this.player, shipId);
+        sendPacketS2C(this.player, "ShipSpawned", shipId);
         print("[INFO] Ship spawned for player " + this.player.Name);
     }
 
@@ -79,7 +80,7 @@ export class GamePlayer {
         const base = world.bases[baseId];
         if (base === undefined) return;
         // Remove player ship and add player to base
-        (ReplicatedStorage.WaitForChild("DockRequestEvent") as RemoteEvent).FireClient(this.player);
+        sendPacketS2C(this.player, "DockRequest", this.shipId);
         this.removeShip();
         this.state = PlayerState.Base;
         const newPlayer = importModel(18198568965);

@@ -4,6 +4,7 @@ import { MapData } from "./map";
 import { isNil } from "../util/util";
 import { World } from "./world";
 import { Turret } from "./turret";
+import { listenPacketC2S } from "shared/util/network";
 
 const DRAG = 0.1;
 const TURN_DRAG = 0.05;
@@ -103,28 +104,24 @@ export class Ship {
         model.SetAttribute("targetTurn", 0);
 
         // Setup remote event for movement updates
-        (ReplicatedStorage.WaitForChild("MovementUpdateEvent") as RemoteEvent).OnServerEvent.Connect(
-            (player, shipId, targetPower, targetTurn) => {
-                if (typeIs(shipId, "number") && shipId === this.id) {
-                    if (typeIs(targetPower, "number")) this.targetPower = targetPower;
-                    if (typeIs(targetTurn, "number")) this.targetTurn = targetTurn;
-                }
-            },
-        );
-        (ReplicatedStorage.WaitForChild("CameraUpdateEvent") as RemoteEvent).OnServerEvent.Connect(
-            (player, shipId, cameraHeading, cameraFocus) => {
-                if (typeIs(shipId, "number") && shipId === this.id) {
-                    if (typeIs(cameraHeading, "number")) this.cameraHeading = cameraHeading;
-                    if (typeIs(cameraFocus, "number")) this.cameraFocus = cameraFocus;
-                }
-            },
-        );
-        (ReplicatedStorage.WaitForChild("DockRequestEvent") as RemoteEvent).OnServerEvent.Connect((player, shipId) => {
+        listenPacketC2S("MovementUpdate", (player, shipId, targetPower, targetTurn) => {
+            if (typeIs(shipId, "number") && shipId === this.id) {
+                if (typeIs(targetPower, "number")) this.targetPower = targetPower;
+                if (typeIs(targetTurn, "number")) this.targetTurn = targetTurn;
+            }
+        });
+        listenPacketC2S("CameraUpdate", (player, shipId, cameraHeading, cameraFocus) => {
+            if (typeIs(shipId, "number") && shipId === this.id) {
+                if (typeIs(cameraHeading, "number")) this.cameraHeading = cameraHeading;
+                if (typeIs(cameraFocus, "number")) this.cameraFocus = cameraFocus;
+            }
+        });
+        listenPacketC2S("DockRequest", (player, shipId) => {
             if (typeIs(shipId, "number") && shipId === this.id) {
                 this.AttemptDock(map);
             }
         });
-        (ReplicatedStorage.WaitForChild("WeaponFireEvent") as RemoteEvent).OnServerEvent.Connect((player, shipId) => {
+        listenPacketC2S("WeaponFire", (player, shipId) => {
             if (typeIs(shipId, "number") && shipId === this.id) {
                 for (const turret of this.turrets) {
                     turret.FireTurret();
