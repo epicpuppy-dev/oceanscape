@@ -57,7 +57,7 @@ export class Ship {
                 90, //rotation
                 0, //heading
                 0, //angle
-                238.5, //velocity
+                51.26, //velocity
                 18111406054, //model
                 this,
                 attachment,

@@ -69,7 +69,7 @@ export class Turret {
         // Code to rotate turret towards target
         this.targetHeading = (-this.ship.cameraHeading + 90 + this.ship.heading) % 360;
         this.targetDistance = this.ship.cameraFocus;
-        this.targetAngle = math.deg(math.asin((9.81 * this.targetDistance) / this.velocity ** 2) / 2);
+        this.targetAngle = math.deg(math.asin(((9.81 / 5) * this.targetDistance) / this.velocity ** 2) / 2);
         const headingDeltaCW = this.targetHeading - this.heading;
         let headingDeltaCCW = this.targetHeading - this.heading + 360;
         if (headingDeltaCCW > 360) headingDeltaCCW -= 720;
