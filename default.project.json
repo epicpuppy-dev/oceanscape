@@ -23,14 +23,23 @@
 					}
 				}
 			},
-			"MovementUpdateEvent": {
+			"PacketEvent": {
 				"$className": "RemoteEvent"
 			},
 			"Roact": {
 				"$path": "assets/lib/Roact.rbxm"
 			},
 			"TS": {
-				"$path": "out/shared"
+				"$className": "Folder",
+				"Classes": {
+					"$path": "out/shared/classes"
+				},
+				"Gui": {
+					"$path": "out/shared/gui"
+				},
+				"Util": {
+					"$path": "out/shared/util"
+				}
 			}
 		},
 		"StarterPlayer": {
@@ -40,15 +49,13 @@
 				"TS": {
 					"$path": "out/client"
 				}
-			},
-			"StarterCharacter": {
-				"$path": "assets/models/StarterShip.rbxm"
 			}
 		},
 		"Workspace": {
 			"$className": "Workspace",
 			"$properties": {
-				"FilteringEnabled": true
+				"FilteringEnabled": true,
+				"Gravity": 1.962
 			},
 			"Terrain": {
 				"$path": "assets/Terrain.rbxm"
@@ -70,9 +77,15 @@
 			"$className": "Lighting",
 			"$properties": {
 				"Technology": "Future",
-				"FogStart": 200,
-				"FogEnd": 1000,
+				"FogStart": 1000,
+				"FogEnd": 5000,
 				"ClockTime": 16
+			}
+		},
+		"Players": {
+			"$className": "Players",
+			"$properties": {
+				"RespawnTime": 10
 			}
 		}
 	}
