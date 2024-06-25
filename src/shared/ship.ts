@@ -1,4 +1,8 @@
 import { InsertService, ReplicatedStorage } from "@rbxts/services";
+import { GamePlayer } from "./player";
+import { MapData } from "./map";
+import { isNil } from "./util";
+import { World } from "./world";
 import { Turret } from "./turret";
 
 const DRAG = 0.1;
@@ -22,9 +26,18 @@ export class Ship {
     model: Model;
     cameraHeading: number = 0;
     cameraFocus: number = 100;
+    docking: boolean = false;
+    dockingTime: number;
+    dockingAt: number | undefined;
+    timeLeft: number;
+    world: World;
+    player: GamePlayer | undefined;
     turrets: Turret[] = [];
 
     constructor(
+        map: MapData,
+        world: World,
+        anchor: Attachment,
         id: number,
         model: Model,
         heading: number,
@@ -35,7 +48,10 @@ export class Ship {
         armor: number,
         hull: number,
         turrets: number,
+        dockingTime: number,
+        player?: GamePlayer,
     ) {
+        this.world = world;
         this.id = id;
         this.model = model;
         this.heading = heading % 360;
@@ -47,6 +63,9 @@ export class Ship {
         this.maxArmor = armor;
         this.hull = hull;
         this.maxHull = hull;
+        this.dockingTime = dockingTime;
+        this.timeLeft = dockingTime;
+        this.player = player;
 
         for (let i = 0; i < turrets; i++) {
             const attachment = this.model.WaitForChild("Hardpoints").WaitForChild("Turret" + i) as Attachment;
@@ -77,6 +96,11 @@ export class Ship {
         model.SetAttribute("maxArmor", this.maxArmor);
         model.SetAttribute("hull", this.hull);
         model.SetAttribute("maxHull", this.maxHull);
+        model.SetAttribute("docking", this.docking);
+        model.SetAttribute("dockingTime", this.dockingTime);
+        model.SetAttribute("timeLeft", this.timeLeft);
+        model.SetAttribute("targetPower", 0);
+        model.SetAttribute("targetTurn", 0);
 
         // Setup remote event for movement updates
         (ReplicatedStorage.WaitForChild("MovementUpdateEvent") as RemoteEvent).OnServerEvent.Connect(
@@ -95,6 +119,11 @@ export class Ship {
                 }
             },
         );
+        (ReplicatedStorage.WaitForChild("DockRequestEvent") as RemoteEvent).OnServerEvent.Connect((player, shipId) => {
+            if (typeIs(shipId, "number") && shipId === this.id) {
+                this.AttemptDock(map);
+            }
+        });
         (ReplicatedStorage.WaitForChild("WeaponFireEvent") as RemoteEvent).OnServerEvent.Connect((player, shipId) => {
             if (typeIs(shipId, "number") && shipId === this.id) {
                 for (const turret of this.turrets) {
@@ -105,7 +134,7 @@ export class Ship {
         model.PrimaryPart!.CFrame = new CFrame(model.PrimaryPart!.Position.X, 2, model.PrimaryPart!.Position.Z);
     }
 
-    TickMovement(dt: number) {
+    TickShip(dt: number) {
         // Update speed
         this.speed =
             this.speed +
@@ -149,10 +178,19 @@ export class Ship {
             ),
         );
 
+        if (this.docking) {
+            this.timeLeft -= dt;
+            if (this.timeLeft <= 0) {
+                this.player!.dockAtBase(this.world, this.dockingAt!);
+            }
+        }
+
         // Update model attributes
         this.model.SetAttribute("heading", this.heading);
         this.model.SetAttribute("speed", this.speed);
         this.model.SetAttribute("rudder", this.rudder);
+        this.model.SetAttribute("docking", this.docking);
+        this.model.SetAttribute("timeLeft", this.timeLeft);
         for (const turret of this.turrets) {
             turret.TickTurret(dt);
         }
@@ -182,5 +220,19 @@ export class Ship {
 
     DestroyShip() {
         (this.model.WaitForChild("Humanoid") as Humanoid).Health = 0;
+    }
+
+    AttemptDock(map: MapData) {
+        if (this.docking) {
+            this.docking = false;
+            this.dockingAt = undefined;
+            return;
+        }
+        const dockTarget = map.checkDock(this.model.PrimaryPart!.Position.X, this.model.PrimaryPart!.Position.Z, 75);
+        if (dockTarget !== -1) {
+            this.docking = true;
+            this.dockingAt = dockTarget;
+            this.timeLeft = this.dockingTime;
+        }
     }
 }

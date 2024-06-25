@@ -29,6 +29,18 @@
 			"CameraUpdateEvent": {
 				"$className": "RemoteEvent"
 			},
+			"BaseInfoEvent": {
+				"$className": "RemoteEvent"
+			},
+			"MapUpdateEvent": {
+				"$className": "RemoteEvent"
+			},
+			"DockRequestEvent": {
+				"$className": "RemoteEvent"
+			},
+			"ShipSpawnEvent": {
+				"$className": "RemoteEvent"
+			},
 			"WeaponFireEvent": {
 				"$className": "RemoteEvent"
 			},
@@ -46,9 +58,6 @@
 				"TS": {
 					"$path": "out/client"
 				}
-			},
-			"StarterCharacter": {
-				"$path": "assets/models/Wave.rbxm"
 			}
 		},
 		"Workspace": {

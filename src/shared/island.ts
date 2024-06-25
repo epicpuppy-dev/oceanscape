@@ -9,7 +9,15 @@ export class Island {
     model: Model;
     base: Base | undefined;
 
-    constructor(variant: string, x: number, y: number, orientation: number, parent: Instance, base: boolean) {
+    constructor(
+        variant: string,
+        x: number,
+        y: number,
+        orientation: number,
+        parent: Instance,
+        base: boolean,
+        baseId?: number,
+    ) {
         this.variant = variant;
         this.x = x;
         this.y = y;
@@ -17,7 +25,7 @@ export class Island {
         this.model = importModel(17900649471);
         this.model.Parent = parent;
         if (base) {
-            this.base = new Base(this.variant, this);
+            this.base = new Base(baseId!, this.variant, this);
         } else {
             this.base = undefined;
         }
