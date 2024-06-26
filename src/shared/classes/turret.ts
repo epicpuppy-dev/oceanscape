@@ -1,5 +1,6 @@
 import { InsertService, ReplicatedStorage, Workspace } from "@rbxts/services";
 import { Ship } from "./ship";
+import { Bullet } from "./bullet";
 
 export class Turret {
     damage: number; // Damage per shot
@@ -90,17 +91,12 @@ export class Turret {
     FireTurret() {
         // Code to fire turret
         if (this.reloading > 0) return;
-        const bullet = new Instance("Part");
+        const bullet = new Bullet(this.damage, new Instance("Part"));
         const barrel = this.model.WaitForChild("Barrel") as BasePart;
-        bullet.Parent = Workspace.WaitForChild("Bullets");
-        bullet.Size = new Vector3(0.2, 0.2, 0.2);
-        bullet.Material = Enum.Material.Neon;
-        bullet.Color = Color3.fromRGB(255, 153, 0);
-        bullet.Position = barrel.Position;
-        bullet.Orientation = barrel.Orientation;
+        bullet.part.Position = barrel.Position;
+        bullet.part.Orientation = barrel.Orientation;
         const firingDir = barrel.CFrame.mul(CFrame.Angles(0, math.rad(-90), 0));
-        bullet.ApplyImpulse(firingDir.LookVector.mul(this.velocity * bullet.Mass));
-        print("firing");
+        bullet.part.ApplyImpulse(firingDir.LookVector.mul(this.velocity * bullet.part.Mass));
         this.reloading = this.reloadTime;
     }
 }
