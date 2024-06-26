@@ -122,7 +122,7 @@ export class Ship {
         listenPacketC2S<Packet.WeaponFire>("WeaponFire", (player, packet) => {
             if (typeIs(packet.shipId, "number") && packet.shipId === this.id) {
                 for (const turret of this.turrets) {
-                    turret.FireTurret();
+                    turret.FireTurret(world);
                 }
             }
         });
