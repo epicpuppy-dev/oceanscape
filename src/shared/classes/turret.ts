@@ -1,6 +1,7 @@
 import { InsertService, ReplicatedStorage, Workspace } from "@rbxts/services";
 import { Ship } from "./ship";
 import { Bullet } from "./bullet";
+import { World } from "./world";
 
 export class Turret {
     damage: number; // Damage per shot
@@ -88,10 +89,10 @@ export class Turret {
             this.reloading -= dt;
         }
     }
-    FireTurret() {
+    FireTurret(world: World) {
         // Code to fire turret
         if (this.reloading > 0) return;
-        const bullet = new Bullet(this.damage, new Instance("Part"));
+        const bullet = new Bullet(world, this.damage, new Instance("Part"));
         const barrel = this.model.WaitForChild("Barrel") as BasePart;
         bullet.part.Position = barrel.Position;
         bullet.part.Orientation = barrel.Orientation;
