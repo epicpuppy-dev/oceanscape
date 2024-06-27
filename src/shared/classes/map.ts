@@ -14,12 +14,10 @@ export class MapData {
                     closestDistance = distance;
                 }
                 if (distance <= range) {
-                    //print(distance);
                     return base[1].id;
                 }
             }
         }
-        //print(`Closest distance: ${closestDistance}`);
         return -1;
     }
 }
