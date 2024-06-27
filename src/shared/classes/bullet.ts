@@ -15,14 +15,11 @@ export class Bullet {
         this.part.Color = Color3.fromRGB(255, 153, 0);
         wait();
         this.part.Touched.Connect((hit) => {
-            print("touched something!");
-            print(hit.Parent);
             const shipID = hit.Parent?.GetAttribute("id");
             if (typeIs(shipID, "number")) {
                 const ship = world.ships[shipID];
                 if (ship !== undefined) {
                     ship.DamageShip(this.damage);
-                    print("damaged ship!");
                     this.part.Destroy();
                 }
             }

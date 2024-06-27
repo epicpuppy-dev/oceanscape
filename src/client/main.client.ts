@@ -113,7 +113,6 @@ UIS.InputBegan.Connect((input, chatting) => {
         player.ship.SetAttribute("targetTurn", targetTurn);
     } else if (player.state === PlayerState.Base && player.baseId !== undefined) {
         if (input.KeyCode === controls.dock) {
-            print("Attempt undock");
             sendPacketC2S<Packet.UndockRequest>("UndockRequest", { baseId: player.baseId });
         }
     }
