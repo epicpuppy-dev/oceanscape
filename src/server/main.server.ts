@@ -1,7 +1,9 @@
-import { Players, Workspace } from "@rbxts/services";
+import { DataStoreService, Players, Workspace } from "@rbxts/services";
 import { GamePlayer } from "shared/classes/player";
 import { World } from "shared/classes/world";
 import { generateDiscWorld } from "../shared/util/worldgen";
+
+const inventoryStore = DataStoreService.GetDataStore("Inventory");
 
 Players.CharacterAutoLoads = false;
 
@@ -23,7 +25,7 @@ function onPlayerRemoved(player: Player) {
 }
 
 function onPlayerAdded(player: Player) {
-    const gamePlayer = new GamePlayer(player, W);
+    const gamePlayer = new GamePlayer(player, W, inventoryStore);
     W.addPlayer(gamePlayer);
     gamePlayer.spawnShip(18198556467);
     wait(1);

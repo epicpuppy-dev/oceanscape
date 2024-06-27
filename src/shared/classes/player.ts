@@ -4,6 +4,8 @@ import { World } from "./world";
 import { ReplicatedStorage, Workspace } from "@rbxts/services";
 import { Ship } from "./ship";
 import { listenPacketC2S, sendPacketS2C } from "shared/util/network";
+import { Inventory } from "./inventory";
+import { deserializeInventory } from "shared/util/save";
 
 export class GamePlayer {
     id: number;
@@ -12,14 +14,23 @@ export class GamePlayer {
     baseId: number | undefined;
     ship: Model | undefined;
     player: Player;
+    inventory: Inventory | undefined;
     gui: Roact.Tree | undefined;
     world: World | undefined;
 
-    constructor(player: Player, world?: World) {
+    constructor(player: Player, world?: World, inventoryStore?: DataStore) {
         this.id = player.UserId;
         this.player = player;
         this.world = world;
-        if (world !== undefined) {
+        if (world !== undefined && inventoryStore !== undefined) {
+            // Server-only data
+            const playerData = inventoryStore.GetAsync(tostring(player.UserId), {
+                UseCache: false,
+            } as DataStoreGetOptions);
+            if (playerData !== undefined) {
+                this.inventory = deserializeInventory(playerData[0] as string);
+            } else this.inventory = new Inventory();
+
             listenPacketC2S<Packet.UndockRequest>("UndockRequest", (player, packet) => {
                 if (this.player.UserId === player.UserId && this.state === PlayerState.Base) this.undockFromBase();
             });
