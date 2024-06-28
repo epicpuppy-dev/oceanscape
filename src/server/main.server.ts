@@ -1,7 +1,9 @@
 import { DataStoreService, Players, Workspace } from "@rbxts/services";
-import { GamePlayer } from "shared/classes/player";
+import { GamePlayer, PlayerState } from "shared/classes/player";
 import { World } from "shared/classes/world";
 import { generateDiscWorld } from "../shared/util/worldgen";
+import { serializeInventory } from "shared/util/save";
+import { DevTools } from "shared/classes/devtools";
 
 const inventoryStore = DataStoreService.GetDataStore("Inventory");
 
@@ -19,9 +21,19 @@ generateFolder("Bullets");
 
 const W = new World(generateDiscWorld(1, 6000, 3, [100, 2000, 4000], [0, 75, 40], [1, 3, 5], [100, 1000, 2000]));
 
+const devtools = new DevTools(W);
+
 function onPlayerRemoved(player: Player) {
     const gamePlayer = W.players[player.UserId]!;
-    const character = player.Character;
+    // save player data
+    try {
+        inventoryStore.SetAsync(tostring(player.UserId), serializeInventory(gamePlayer.inventory!));
+    } catch (e) {
+        warn("Failed to save player data for player " + player.Name + ": " + e);
+    }
+    if (gamePlayer.state === PlayerState.Ship) {
+        W.ships[gamePlayer.shipId!]?.DestroyShip();
+    }
 }
 
 function onPlayerAdded(player: Player) {

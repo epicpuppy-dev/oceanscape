@@ -28,4 +28,7 @@ declare namespace Packet {
     type WeaponFire = {
         shipId: number;
     };
+    type DevCommand = {
+        command: string;
+    };
 }

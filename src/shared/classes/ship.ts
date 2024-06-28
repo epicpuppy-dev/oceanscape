@@ -217,6 +217,7 @@ export class Ship {
 
     DestroyShip() {
         (this.model.WaitForChild("Humanoid") as Humanoid).Health = 0;
+        this.model.Destroy();
     }
 
     AttemptDock(map: MapData) {

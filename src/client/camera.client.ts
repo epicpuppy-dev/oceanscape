@@ -18,6 +18,8 @@ let cameraHeight = 10; // Height of the camera
 const cameraHeightRatio = cameraDistance / cameraHeight; // Ratio of camera distance to height
 const player = Players.LocalPlayer!;
 
+let mouseUnlocked = false;
+
 // Camera Formula Constants
 const CAMERA_BASE = 5;
 const CAMERA_MOD = 0.01;
@@ -30,7 +32,7 @@ player.CharacterAdded.Connect((character) => {
 
     function playerInput(actionName: string, inputState: Enum.UserInputState, inputObject: InputObject) {
         // Calculate camera/player rotation on input change
-        if (inputState === Enum.UserInputState.Change) {
+        if (inputState === Enum.UserInputState.Change && !mouseUnlocked) {
             cameraHeading = (cameraHeading + inputObject.Delta.X * 0.5) % 360;
             rawCameraFocus = math.clamp(rawCameraFocus - inputObject.Delta.Y, 0, 450);
             cameraFocus = math.pow(CAMERA_BASE, 1 + rawCameraFocus * CAMERA_MOD) + CAMERA_BUMP;
@@ -67,9 +69,20 @@ player.CharacterAdded.Connect((character) => {
     UserInputService.MouseIconEnabled = false;
 
     RunService.BindToRenderStep("CameraUpdate", Enum.RenderPriority.Camera.Value + 1, () => {
-        UserInputService.MouseBehavior = Enum.MouseBehavior.LockCenter;
-        UserInputService.MouseIconEnabled = false;
+        if (mouseUnlocked) {
+            UserInputService.MouseBehavior = Enum.MouseBehavior.Default;
+            UserInputService.MouseIconEnabled = true;
+        } else {
+            UserInputService.MouseBehavior = Enum.MouseBehavior.LockCenter;
+            UserInputService.MouseIconEnabled = false;
+        }
         updateCamera();
+    });
+
+    UserInputService.InputBegan.Connect((input, gameProcessed) => {
+        if (input.KeyCode === Enum.KeyCode.LeftAlt) {
+            mouseUnlocked = !mouseUnlocked;
+        }
     });
 });
 

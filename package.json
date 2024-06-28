@@ -9,7 +9,7 @@
     "sync": "tarmac sync --target roblox"
   },
   "keywords": [],
-  "author": "",
+  "author": "epicpuppy.dev",
   "license": "ISC",
   "devDependencies": {
     "@rbxts/compiler-types": "^2.3.0-types.1",

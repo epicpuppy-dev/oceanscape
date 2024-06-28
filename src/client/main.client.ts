@@ -1,9 +1,10 @@
 import { ContextActionService, Players, RunService, StarterGui, UserInputService } from "@rbxts/services";
 import Roact from "@rbxts/roact";
-import { SpeedDisplay, HeadingDisplay, TurnBar, ShipStatus, Crosshair, DockIndicator } from "shared/gui/ship.gui";
+import { SpeedDisplay, HeadingDisplay, TurnBar, ShipStatus, Crosshair, DockIndicator } from "shared/gui/ship";
 import { GamePlayer, PlayerState } from "shared/classes/player";
 import { BaseEntry, MapData } from "shared/classes/map";
 import { listenPacketS2C, sendPacketC2S } from "shared/util/network";
+import { DevTools } from "shared/gui/devtools";
 
 const player = new GamePlayer(Players.LocalPlayer);
 const map = new MapData();
@@ -36,6 +37,9 @@ const hud = {
         inCombat: false,
     }),
 };
+
+const devtools = Roact.createElement(DevTools);
+let devgui: Roact.Tree | undefined;
 
 const ui = Roact.createElement("ScreenGui", {}, hud);
 
@@ -82,6 +86,14 @@ function UpdateUI(dt: number) {
 const UIS = UserInputService;
 UIS.InputBegan.Connect((input, chatting) => {
     if (chatting) return;
+    if (input.KeyCode === Enum.KeyCode.Backquote && input.IsModifierKeyDown(Enum.ModifierKey.Alt)) {
+        if (devgui === undefined) devgui = Roact.mount(devtools, player.player.WaitForChild("PlayerGui"));
+        else {
+            Roact.unmount(devgui);
+            devgui = undefined;
+        }
+        return;
+    }
     if (player.state === PlayerState.Ship && player.ship !== undefined && player.shipId !== undefined) {
         let targetPower = player.ship.GetAttribute("targetPower") as number;
         let targetTurn = player.ship.GetAttribute("targetTurn") as number;

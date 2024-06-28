@@ -14,6 +14,7 @@ export class World {
     map: MapData = new MapData();
     players: { [key: string]: GamePlayer | undefined } = {};
     anchor: Attachment;
+    shipData: [] = [];
 
     constructor(islands: Island[]) {
         islands.forEach((island) => {

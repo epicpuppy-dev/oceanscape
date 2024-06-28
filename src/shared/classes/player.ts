@@ -24,11 +24,9 @@ export class GamePlayer {
         this.world = world;
         if (world !== undefined && inventoryStore !== undefined) {
             // Server-only data
-            const playerData = inventoryStore.GetAsync(tostring(player.UserId), {
-                UseCache: false,
-            } as DataStoreGetOptions);
+            const [playerData, keyInfo] = inventoryStore.GetAsync(tostring(player.UserId));
             if (playerData !== undefined) {
-                this.inventory = deserializeInventory(playerData[0] as string);
+                this.inventory = deserializeInventory(playerData as string);
             } else this.inventory = new Inventory();
 
             listenPacketC2S<Packet.UndockRequest>("UndockRequest", (player, packet) => {
